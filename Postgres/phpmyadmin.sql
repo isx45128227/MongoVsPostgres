@@ -14,7 +14,7 @@ CREATE TABLE usuaris
     username varchar(25) NOT NULL,
     telefon varchar(9),
     data_alta timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    data_ultim_acces timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_ultim_acces timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     descripcio varchar(100),
     ciutat varchar(50) NOT NULL,
     url varchar(150) NOT NULL,
