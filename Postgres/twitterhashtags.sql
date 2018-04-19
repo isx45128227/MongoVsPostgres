@@ -12,14 +12,13 @@ CREATE DATABASE twitter;
 
 CREATE TABLE usuaris
 (
-    id_usuari serial PRIMARY KEY,
+    id_usuari bigserial PRIMARY KEY,
     nom varchar(20) NOT NULL,
     cognoms varchar(50) NOT NULL,
     password varchar(25) NOT NULL,
     username varchar(25) NOT NULL,
     telefon varchar(9),
     data_alta timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    data_ultim_acces timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, --ON UPDATE CURRENT_TIMESTAMP,
     descripcio varchar(100),
     ciutat varchar(50) NOT NULL,
     url varchar(150) NOT NULL,
@@ -30,7 +29,7 @@ CREATE TABLE usuaris
 
 CREATE TABLE tweets
 (
-    id_tweet serial PRIMARY KEY,
+    id_tweet bigserial PRIMARY KEY,
     text_tweet varchar(280),
     id_usuari bigint,
     data_tweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,7 +42,7 @@ CREATE TABLE tweets
 
 CREATE TABLE fotos
 (
-    id_foto serial PRIMARY KEY,
+    id_foto bigserial PRIMARY KEY,
     text_foto varchar(280),
     id_tweet bigint,
     data_foto timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,7 +52,7 @@ CREATE TABLE fotos
 
 CREATE TABLE hashtags
 (
-    id_hashtag serial PRIMARY KEY,
+    id_hashtag bigserial PRIMARY KEY,
     hashtag varchar(50),
     data_creacio_hashtag timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -61,7 +60,7 @@ CREATE TABLE hashtags
 
 CREATE TABLE hashtagstweets
 (
-    id_hashtagtweet serial PRIMARY KEY,
+    id_hashtagtweet bigserial PRIMARY KEY,
     id_hashtag bigint,
     id_tweet bigint
 );
@@ -69,7 +68,7 @@ CREATE TABLE hashtagstweets
 
 CREATE TABLE seguidors
 (
-    id serial PRIMARY KEY,
+    id bigserial PRIMARY KEY,
     data_seguidor timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     id_usuari_seguit bigint,
     id_usuari_seguidor bigint
@@ -78,7 +77,7 @@ CREATE TABLE seguidors
 
 CREATE TABLE comentaris
 (
-    id_comentari serial PRIMARY KEY,
+    id_comentari bigserial PRIMARY KEY,
     data_comentari timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     text_comentari varchar(50),
     id_usuari_comentari bigint,
@@ -89,7 +88,7 @@ CREATE TABLE comentaris
 
 CREATE TABLE usuarislikescomentaris
 (
-    id_likecom serial PRIMARY KEY,
+    id_likecom bigserial PRIMARY KEY,
     id_usuari bigint NOT NULL,
     id_comentari bigint NOT NULL,
     UNIQUE(id_usuari,id_comentari)
@@ -98,7 +97,7 @@ CREATE TABLE usuarislikescomentaris
 
 CREATE TABLE retweets
 (
-    id_retweet serial PRIMARY KEY,
+    id_retweet bigserial PRIMARY KEY,
     data_retweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     text_retweet varchar(50),
     id_usuari_retweet bigint,
@@ -110,7 +109,7 @@ CREATE TABLE retweets
 
 CREATE TABLE likes
 (
-    id_like serial PRIMARY KEY,
+    id_like bigserial PRIMARY KEY,
     data_like timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuari_like bigint,
     id_tweet bigint,
