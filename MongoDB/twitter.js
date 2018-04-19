@@ -16,40 +16,34 @@ retweets
 tweets {
     text:
     usuari: {
-					
-		}
-    
-		data:
-		foto:{ data_foto:
-					 text_foto:
     }
-    
+    data:
+    foto:{ data_foto:
+	   text_foto:
+    }
     lat:
     lon:
-    
     hashtags:[
-        { text:
-          data_creacio:    
-        }
+	      { text:
+	        data_creacio:
+	      }
     ]
-    
-		likes:[
-				{	data_like:
-					usuari_like:
-				}
-		]
-    
+    likes:[
+	    { data_like:
+	      usuari_like:
+	    }
+    ]
     comentaris:[
-				{	data_comentari:
-					usuari_comentari:
-					text_comentari:
-					likes_comentari:[
-								{	data_like_comentari:
-									usuari_like_comentari:
-								}]
-        }
-		]
-    
+	         { data_comentari:
+		   usuari_comentari:
+		   text_comentari:
+		   likes_comentari:[
+		                     { data_like_comentari:
+		                       usuari_like_comentari:
+		                     }
+                   ]
+	         }
+    ]
     num_likes:
     num_retweets:
     num_comments:
