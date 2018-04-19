@@ -12,7 +12,7 @@ CREATE DATABASE twitter;
 
 CREATE TABLE usuaris
 (
-    id_usuari bigint PRIMARY KEY,
+    id_usuari serial PRIMARY KEY,
     nom varchar(20) NOT NULL,
     cognoms varchar(50) NOT NULL,
     password varchar(25) NOT NULL,
@@ -30,21 +30,30 @@ CREATE TABLE usuaris
 
 CREATE TABLE tweets
 (
-    id_tweet bigint PRIMARY KEY,
-    text_tweet varchar(100),
+    id_tweet serial PRIMARY KEY,
+    text_tweet varchar(280),
     id_usuari bigint,
     data_tweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     lat float,
     lon float,
-    url varchar(100),
-    foto varchar(100),
-    esborrat boolean NOT NULL DEFAULT 'f'
+    foto bigint,
+    esborrat boolean NOT NULL DEFAULT false
+);
+
+
+CREATE TABLE fotos
+(
+    id_foto serial PRIMARY KEY,
+    text_foto varchar(280),
+    id_tweet bigint,
+    data_foto timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    esborrat boolean NOT NULL DEFAULT false
 );
 
 
 CREATE TABLE hashtags
 (
-    id_hashtag bigint PRIMARY KEY,
+    id_hashtag serial PRIMARY KEY,
     hashtag varchar(50),
     data_creacio_hashtag timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -52,7 +61,7 @@ CREATE TABLE hashtags
 
 CREATE TABLE seguidors
 (
-    id bigint PRIMARY KEY,
+    id serial PRIMARY KEY,
     data_seguidor timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     id_usuari_seguit bigint,
     id_usuari_seguidor bigint
@@ -61,7 +70,7 @@ CREATE TABLE seguidors
 
 CREATE TABLE comentaris
 (
-    id_comentari bigint PRIMARY KEY,
+    id_comentari serial PRIMARY KEY,
     data_comentari timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     text_comentari varchar(50),
     id_usuari_comentari bigint,
@@ -72,7 +81,7 @@ CREATE TABLE comentaris
 
 CREATE TABLE usuarislikescomentaris
 (
-    id_likecom bigint PRIMARY KEY,
+    id_likecom serial PRIMARY KEY,
     id_usuari bigint NOT NULL,
     id_comentari bigint NOT NULL,
     UNIQUE(id_usuari,id_comentari)
@@ -81,7 +90,7 @@ CREATE TABLE usuarislikescomentaris
 
 CREATE TABLE retweets
 (
-    id_retweet bigint PRIMARY KEY,
+    id_retweet serial PRIMARY KEY,
     data_retweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     text_retweet varchar(50),
     id_usuari_retweet bigint,
@@ -93,7 +102,7 @@ CREATE TABLE retweets
 
 CREATE TABLE likes
 (
-    id_like bigint PRIMARY KEY,
+    id_like serial PRIMARY KEY,
     data_like timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuari_like bigint,
     id_tweet bigint,
@@ -151,5 +160,10 @@ ADD CONSTRAINT fk_usuari
 FOREIGN KEY (id_usuari_like) REFERENCES usuaris(id_usuari);
 
 ALTER TABLE likes 
+ADD CONSTRAINT fk_tweet
+FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
+
+
+ALTER TABLE fotos 
 ADD CONSTRAINT fk_tweet
 FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
