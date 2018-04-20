@@ -125,6 +125,9 @@ ALTER TABLE tweets
 ADD CONSTRAINT fk_usuari
 FOREIGN KEY (id_usuari) REFERENCES usuaris(id_usuari);
 
+ALTER TABLE tweets 
+ADD CONSTRAINT fk_foto
+FOREIGN KEY (id_foto) REFERENCES fotos(id_foto);
 
 ALTER TABLE hashtagstweets 
 ADD CONSTRAINT fk_tweet
