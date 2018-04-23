@@ -5,7 +5,7 @@ import random, datetime
 
 now = datetime.datetime.now()
 
-## Funció que crea moltes fotos
+## Funció que crea fotos
 for i in range (0,50000):
 	id_foto = random.randrange(1,49000,1)
 	id_tweet = random.randrange(1,100000,1)

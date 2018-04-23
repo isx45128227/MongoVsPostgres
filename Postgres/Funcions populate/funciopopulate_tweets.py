@@ -6,7 +6,7 @@ import random, datetime
 now = datetime.datetime.now()
 
 
-## Funció que crea molts tweets
+## Funció que crea tweets
 for i in range (0,1000000):
 	id_usuari = random.randrange(1,100000,1)
 	text = "Tweet %d de prova d'un usuari" %(i)

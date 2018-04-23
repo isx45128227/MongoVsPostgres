@@ -5,7 +5,7 @@ import random, datetime
 
 now = datetime.datetime.now()
 
-## Funció que crea hashtags
+## Funció que crea comentaris
 for i in range (0,1000000):
 	data = now.strftime("%Y-%m-%d %H:%M")
 	id_tweet = random.randrange(1,100000,1)

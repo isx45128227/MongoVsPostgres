@@ -5,11 +5,67 @@ import random, datetime
 
 now = datetime.datetime.now()
 
-noms = ['marta','pere','pau','berta','jordi','marc','cesc','quique','roger','montserrat','anna','fran','adrià','sara','gemma','blanca','rosa','paula','paco']
-cognoms = ['ferran','marti','garcia','serrat','remar','serra','aranguren','cifuentes','goñi','petit','lopez','dominguez','hernandez','suarez']
-ciutats = ['barcelona','madrid','roma','caceres','badajoz','valencia','saragossa','berga','manresa','sitges','albacete','vigo','heidelberg','colonia','praga','frankfurt','girona','viladecavalls']
+noms = [
+    'marta',
+    'pere',
+    'pau',
+    'berta',
+    'jordi',
+    'marc',
+    'cesc',
+    'quique',
+    'roger',
+    'montserrat',
+    'anna',
+    'fran',
+    'adrià',
+    'sara',
+    'gemma',
+    'blanca',
+    'rosa',
+    'paula',
+    'paco',
+]
 
-## Funció que crea molts usuaris
+cognoms = [
+    'ferran',
+    'marti',
+    'garcia',
+    'serrat',
+    'remar',
+    'serra',
+    'aranguren',
+    'cifuentes',
+    'goñi',
+    'petit',
+    'lopez',
+    'dominguez',
+    'hernandez',
+    'suarez',
+]
+
+ciutats = [
+    'barcelona',
+    'madrid',
+    'roma',
+    'caceres',
+    'badajoz',
+    'valencia',
+    'saragossa',
+    'berga',
+    'manresa',
+    'sitges',
+    'albacete',
+    'vigo',
+    'heidelberg',
+    'colonia',
+    'praga',
+    'frankfurt',
+    'girona',
+    'viladecavalls',
+]
+
+## Funció que crea usuaris
 for i in range (0,1000000):
 	usuari = random.choice(noms)
 	cognom = random.choice(cognoms)
