@@ -16,7 +16,7 @@ CREATE TABLE usuaris
     nom varchar(20) NOT NULL,
     cognoms varchar(50) NOT NULL,
     password varchar(25) NOT NULL,
-    username varchar(25) NOT NULL,
+    username varchar(50) NOT NULL,
     telefon varchar(9),
     data_alta timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     descripcio varchar(100),
@@ -30,8 +30,8 @@ CREATE TABLE usuaris
 CREATE TABLE tweets
 (
     id_tweet bigserial PRIMARY KEY,
-    text_tweet varchar(280),
-    id_usuari bigint,
+    text_tweet varchar(280) NOT NULL,
+    id_usuari bigint NOT NULL,
     data_tweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     lat float,
     lon float,
