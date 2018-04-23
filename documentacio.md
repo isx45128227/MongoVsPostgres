@@ -9,25 +9,25 @@ To do it we should install *Postgres* and *Mongo* in our system.
 
 ### Installing Postgres
 
-- As a superuser we have to run:
+As a superuser we have to run:
 
-> Install package
+#### Install package
 
 > `dnf -y install postgresql-server`
 
-> Init postgres
+#### Init postgres
 
 > `postgresql-setup initdb`
 
-> Start postgres service
+#### Start postgres service
 
 > `systemctl start postgresql`
 
-> Enable postgres service
+#### Enable postgres service
 
 > `systemctl enable postgresql`
 
-> Set password to user postgres 
+#### Set password to user postgres 
 
 > `passwd postgres`
 
