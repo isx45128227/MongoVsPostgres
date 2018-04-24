@@ -18,38 +18,38 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 #### Init postgres.
 
-> `postgresql-setup initdb`
+`postgresql-setup initdb`
 
 #### Start postgres service.
 
-> `systemctl start postgresql`
+`systemctl start postgresql`
 
 #### Enable postgres service.
 
-> `systemctl enable postgresql`
+`systemctl enable postgresql`
 
 #### Set password to user postgres.
 
-> `passwd postgres`
+`passwd postgres`
 
 
 Then we have to add the twitter database to postgres:
 
 #### First of all we init session in postgres.
 
-> `su - postgres`
+`su - postgres`
 
 #### Later we init the database agent.
 
-> `-bash-4.3$ psql`
+`-bash-4.3$ psql`
 
 #### Once we have entered to Postgres, we can import the database structure.
 
-> `postgres=# \i /tmp/twitterhashtags.sql;`
+`postgres=# \i /tmp/twitterhashtags.sql;`
 
 #### Now we have the complete database structure. We can check it by using:
 
-> `twitter=# \d`
+`twitter=# \d`
 
                         List of relations
                         
@@ -80,10 +80,10 @@ public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
 #### Finally we have to import all data in our tables so as to have a lot of information to process. I have created scripts that generate lots of data to add to twitter database. They are placed in Postgres/Funcions populate. There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute and redirect the output to a file.
 
   First we create information of hashtags table with our script and put it in /tmp directory:
-> `[user@host ]$ python funciopopulate_hashtags.py > /tmp/hashtags.csv`
+`[user@host ]$ python funciopopulate_hashtags.py > /tmp/hashtags.csv`
 
   Then we import data into twitter database:
- > `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
+ `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
 
   That is the process we should follow for each table.
   
