@@ -153,11 +153,11 @@ First of all we need to add Mongo's repository to our machine.
 `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
 
 And we add:
-> [mongodb]
-> name=MongoDB Repository
-> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-> gpgcheck=0
-> enabled=1
+[mongodb]
+name=MongoDB Repository
+baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+gpgcheck=0
+enabled=1
 
 Later we install the package:
 
@@ -175,9 +175,9 @@ Later we install the package:
 
 ### Database twitter 
 
-Then we have to add the twitter database to mongo. In this case is not necessary to run the interface. We can directly import database from json or csv file.
+Then we have to add the twitter database to mongo. In this case is not necessary to run the interface. We can directly import database from _json_ or _csv_ file.
 
-In this case we have *two* json files, the first one includes *tweets collection* and the second one includes *users collection*.
+In this case we have **two** json files, the first one includes **tweets collection** and the second one includes **users collection**.
 
 * First we import users.
 
