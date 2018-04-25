@@ -154,10 +154,15 @@ First of all we need to add Mongo's repository to our machine.
 
 And we add:
 [mongodb]
+
 name=MongoDB Repository
+
 baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+
 gpgcheck=0
+
 enabled=1
+
 
 Later we install the package:
 
