@@ -2,7 +2,19 @@
 
 The aim of this project is to let you know the great potential of NonSQL databases when we have to process big data volumes. 
 
-Syntax used in MongoDB differs from Postgres, but it's really simple to understand.
+Syntax used in MongoDB differs from Postgres, but it's really simple to understand. In this project you will see how to use syntax in MongoDB and Postgres.
+
+
+## System specifications
+
+This project has been made in Linux Fedora 24.
+The main details of my Fedora machine:
+
+* Processor: Intel Core (TM) i7-6700 CPU @ 3.40GHz
+* RAM: 16 GB
+* HDD: 105 GB
+* Swap: 5 GB
+* System type: 64 bits
 
 
 ## Environment preparation
@@ -19,23 +31,23 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 * Install postgres package.
 
-`dnf -y install postgresql-server`
+`[root@host ]# dnf -y install postgresql-server`
 
 * Init postgres.
 
-`postgresql-setup initdb`
+`[root@host ]# postgresql-setup initdb`
 
 * Start postgres service.
 
-`systemctl start postgresql`
+`[root@host ]# systemctl start postgresql`
 
 * Enable postgres service.
 
-`systemctl enable postgresql`
+`[root@host ]# systemctl enable postgresql`
 
 * Set password to user postgres.
 
-`passwd postgres`
+`[root@host ]# passwd postgres`
 
 
 
@@ -45,7 +57,7 @@ Then we have to add the twitter database to postgres:
 
 * First of all we init session in postgres.
 
-`su - postgres`
+`[root@host ]# su - postgres`
 
 * Later we init the database agent.
 
@@ -113,8 +125,10 @@ tweets                 | funciopopulate_tweets.py
 usuaris                | funciopopulate_usuaris.py   
 usuarislikescomentaris | funciopopulate_usuarislikescomentaris.py    
 
+
 ##### In order to add the hashtag to the tweet, I have created a function in PLPGSQL that adds the hashtag to each tweet.
 ##### Once we have added all information to twitter database we should run this function. 
+
 * First of all we import the function from /tmp.
 
 `twitter=# \i /tmp/funcio_plpgsql.sql;`
@@ -130,3 +144,87 @@ usuarislikescomentaris | funciopopulate_usuarislikescomentaris.py
 
 ### MongoDB installation
 
+As a superuser we have to run different commands in ordrer to install MongoDB in our system:
+
+* Install postgres package.
+
+First of all we need to add Mongo's repository to our machine.
+
+`[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
+
+And we add:
+> [mongodb]
+> name=MongoDB Repository
+> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+> gpgcheck=0
+> enabled=1
+
+Later we install the package:
+
+`[root@host ]# dnf -y install mongodb-org mongodb-org-server`
+
+* Start mongo service.
+
+`[root@host ]# systemctl start mongod`
+
+* Enable mongo service.
+
+`[root@host ]# systemctl enable mongod`
+
+
+
+### Database twitter 
+
+Then we have to add the twitter database to mongo. In this case is not necessary to run the interface. We can directly import database from json or csv file.
+
+In this case we have *two* json files, the first one includes *tweets collection* and the second one includes *users collection*.
+
+* First we import users.
+
+`mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
+
+* Then we import tweets.
+
+`mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
+
+
+##### Once we have added all information to twitter database we can start using our twitter database. 
+
+* First of all we enter to mongo interface.
+
+`[root@host ]# mongo`
+
+
+* Once we have entered to Mongo, we have to choose our database.
+
+`> use twitter`
+
+* Later we can see our collections.
+`> show collections`
+
+
+* To select collections we want to work with we should specify in our find sentence.
+
+   Working on users collection:
+   `> db.users.find()`
+    
+    
+   or working on tweets collection: 
+   `> db.tweets.find()`
+
+
+### Query Documents
+
+As I said at the very beginning of this project syntax in MongoDB differs from Postgres.
+
+Here I show you basic queries in Postgres and their translation into Mongo's syntax.
+
+
+`db.users.update({ age: { $gt: 25 } },{ $set: { status: "C" } },{ multi: true })`     | `UPDATE users SET status = 'C' WHERE age > 25;`
+
+PostgreSQL                                                                                                        | MongoDB
+------------------------------------------------------------------------------------------------------------------|--------------
+`CREATE TABLE tweets (id_tweet bigserial PRIMARY KEY,text_tweet varchar(280) NOT NULL,id_usuari bigint NOT NULL);`| Not Required
+`INSERT INTO tweets(id_tweet,text_tweet,id_usuari)VALUES (DEFAULT,'Example tweet',1);`                            | `db.tweets.insert({ id_tweet: 1, text_tweet:'Example tweet', id_usuari: 1 })`
+`SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
+`UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
