@@ -8,13 +8,14 @@ First of all, before we start analyzing Postgres and Mongo we should prepare the
 To do it we should install *Postgres* and *Mongo* in our system.
 
 
+
 ## Postgres installation
 
 As a superuser we have to run different commands in ordrer to install Postgres in our system:
 
 ### Install postgres package.
 
-> `dnf -y install postgresql-server`
+`dnf -y install postgresql-server`
 
 ### Init postgres.
 
@@ -31,6 +32,7 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 ### Set password to user postgres.
 
 `passwd postgres`
+
 
 
 ## Database twitter
