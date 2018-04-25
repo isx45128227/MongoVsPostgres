@@ -153,15 +153,15 @@ First of all we need to add Mongo's repository to our machine.
 `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
 
 And we add:
-[mongodb]
+> [mongodb]
 
-name=MongoDB Repository
+> name=MongoDB Repository
 
-baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
 
-gpgcheck=0
+> gpgcheck=0
 
-enabled=1
+> enabled=1
 
 
 Later we install the package:
@@ -225,11 +225,21 @@ As I said at the very beginning of this project syntax in MongoDB differs from P
 Here I show you basic queries in Postgres and their translation into Mongo's syntax.
 
 
-`db.users.update({ age: { $gt: 25 } },{ $set: { status: "C" } },{ multi: true })`     | `UPDATE users SET status = 'C' WHERE age > 25;`
-
 PostgreSQL                                                                                                        | MongoDB
 ------------------------------------------------------------------------------------------------------------------|--------------
 `CREATE TABLE tweets (id_tweet bigserial PRIMARY KEY,text_tweet varchar(280) NOT NULL,id_usuari bigint NOT NULL);`| Not Required
 `INSERT INTO tweets(id_tweet,text_tweet,id_usuari)VALUES (DEFAULT,'Example tweet',1);`                            | `db.tweets.insert({ id_tweet: 1, text_tweet:'Example tweet', id_usuari: 1 })`
 `SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
+
+
+
+
+## Docker interface
+
+### Postgres
+
+
+### MongoDB
+
+
