@@ -237,7 +237,22 @@ PostgreSQL                                                                      
 
 ## Docker interface
 
+To test our databases I have created two different Dockers both of them include the entire database.
+
 ### Postgres
+
+* First of all we download and run Postgres docker from DockerHub, where I have the image already created.
+
+`docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
+
+* Later we run our queries using psql (user password is **jupiter**)
+
+`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
+
+
+
+
+
 
 
 ### MongoDB
