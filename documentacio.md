@@ -17,23 +17,23 @@ To do it we should install *Postgres* and *Mongo* in our system.
 
 As a superuser we have to run different commands in ordrer to install Postgres in our system:
 
-#### Install postgres package.
+* Install postgres package.
 
 `dnf -y install postgresql-server`
 
-#### Init postgres.
+* Init postgres.
 
 `postgresql-setup initdb`
 
-#### Start postgres service.
+* Start postgres service.
 
 `systemctl start postgresql`
 
-#### Enable postgres service.
+* Enable postgres service.
 
 `systemctl enable postgresql`
 
-#### Set password to user postgres.
+* Set password to user postgres.
 
 `passwd postgres`
 
@@ -43,19 +43,19 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 Then we have to add the twitter database to postgres:
 
-#### First of all we init session in postgres.
+* First of all we init session in postgres.
 
 `su - postgres`
 
-#### Later we init the database agent.
+* Later we init the database agent.
 
 `-bash-4.3$ psql`
 
-#### Once we have entered to Postgres, we can import the database structure.
+* Once we have entered to Postgres, we can import the database structure.
 
 `postgres=# \i /tmp/twitterhashtags.sql;`
 
-#### Now we have the complete database structure. We can check it by using:
+* Now we have the complete database structure. We can check it by using:
 
 `twitter=# \d`
 
@@ -85,7 +85,7 @@ public | usuarislikescomentaris                | table    | postgres
 public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
 
 
-#### Finally we have to import all data in our tables so as to have a lot of information to process. 
+* Finally we have to import all data in our tables so as to have a lot of information to process. 
 ##### I have created scripts that generate lots of data to add to twitter database. 
 ##### They are placed in Postgres/Funcions populate. 
 ##### There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute and redirect the output to a file.
@@ -115,11 +115,11 @@ usuarislikescomentaris | funciopopulate_usuarislikescomentaris.py
 
 ##### In order to add the hashtag to the tweet, I have created a function in PLPGSQL that adds the hashtag to each tweet.
 ##### Once we have added all information to twitter database we should run this function. 
-##### First of all we import the function from /tmp.
+* First of all we import the function from /tmp.
 
 `twitter=# \i /tmp/funcio_plpgsql.sql;`
 
-##### Then we run the function
+* Then we run the function
 
 `twitter=# SELECT update_tweets();`
 
