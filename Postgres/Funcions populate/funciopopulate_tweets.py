@@ -7,9 +7,9 @@ now = datetime.datetime.now()
 
 
 ## Funció que crea tweets
-for i in range (0,1000000):
+for i in range (0,3000000):
 	id_usuari = random.randrange(1,100000,1)
-	text = "Tweet %d de prova d'un usuari" %(i)
+	text = "Tweet %d de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres." %(i)
 	data = now.strftime("%Y-%m-%d %H:%M")
 	print "%d,%s,%d,%s"%(i,text,id_usuari,data)
 

@@ -8,3 +8,4 @@ Dia | Objectius | Tasca realitzada | Hores
 19/04/2018 | Construcció estructura BBDD Postgres (diagrames Chen). | Construcció estructura BBDD diagrames Chen amb phpMyAdmin. Començar estructura MongoDB | 3h 30min.
 23/04/2018 | Construcció funcions populate per a la BBDD en Postgres. | Funcions populate usuaris, tweets, fotos, hashtags, hashtagstweets, comentaris, seguidors, likes, usuarislikescomentaris, retweets. | 4 hores 
 24/04/2018 | Documentació instal·lació Postgres. | Documentació instal·lació Postgres | 2 hores 
+25/04/2018 | Revisió funcions populate i inici desenvolupament MongoDB. |  | 4 hores 
