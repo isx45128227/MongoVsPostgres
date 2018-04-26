@@ -14,41 +14,77 @@ retweets
 
 // COLLECTION TWEETS
 tweets {
-    text:
-    usuari: {
+    "text": {
+      "type": "string"
     }
-    data:
-    foto:{ data_foto:
-	   text_foto:
+    
+    "usuari": {
+          "type": "number"
     }
-    lat:
-    lon:
-    hashtags:[
-	      { text:
-	        data_creacio:
-	      }
-    ]
-    likes:[
-	    { data_like:
-	      usuari_like:
-	    }
-    ]
-    comentaris:[
-	         { data_comentari:
-		   usuari_comentari:
-		   text_comentari:
-		   likes_comentari:[
-		                     { data_like_comentari:
-		                       usuari_like_comentari:
-		                     }
-                   ]
-	         }
-    ]
-    num_likes:
-    num_retweets:
-    num_comments:
+    
+    "data": {
+          "type": "number"
+    }
+    
+    "foto":{
+          "type": "array",
+          "items": [
+              "data_foto":{ "type": "string"},
+              "text_foto":{ "type": "string"}
+          ]
+    }
+    
+    "geo": { "type": "object" }
+    "hashtags": {
+          "type": "array",
+          "items": [
+              "text":{ "type": "string"},
+              "data_creacio":{ "type": "string"}
+          ]
+    }
+    
+    "likes": {
+          "type": "array",
+          "items": [
+              "usuari_like":{ "type": "number"},
+              "data_like":{ "type": "string"},
+              "esborrat": {"type": "boolean"}
+          ]
+    }
+    
+    "comentaris": {
+          "type": "array",
+          "items": [
+              "usuari_comentari":{ "type": "number"},
+              "data_comentari":{ "type": "string"},
+              "text_comentari":{ "type": "string"},
+              "likes_comentari":{ 
+              "type": "array"
+              "items": [
+                  "usuari_like_comentari":{ "type": "number"},
+                      "data_like_comentari":{ "type": "string"}
+                  ]
+           },
+           "esborrat": {"type": "boolean"}
+          ]
+    }
+    
+    "num_likes": { "type": "number"}
+    "num_retweets": { "type": "number"}
+    "num_comments": { "type": "number"}
+    
+    "retweets": { 
+        "type": "array",
+        "items" : [
+            "id_retweet": {"type": "number"},
+            "id_usuari": {"type": "number"},
+            "id_tweet": {"type": "number"},
+            "data_retweet": {"type": "string"},
+            "text_retweet": {"type": "string"},
+            "esborrat": {"type": "boolean"}
+        ]
 }
-		
+
 
 
 CREATE TABLE usuaris
@@ -75,16 +111,4 @@ CREATE TABLE seguidors
     data_seguidor timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     id_usuari_seguit bigint,
     id_usuari_seguidor bigint
-);
-
-
-CREATE TABLE retweets
-(
-    id_retweet bigserial PRIMARY KEY,
-    data_retweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    text_retweet varchar(50),
-    id_usuari_retweet bigint,
-    id_tweet bigint,
-    esborrat boolean NOT NULL DEFAULT 'f',
-    UNIQUE(id_usuari_retweet,id_tweet)
 );

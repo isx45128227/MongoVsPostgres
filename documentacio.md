@@ -53,7 +53,7 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 ### Database twitter 
 
-Then we have to add the twitter database to postgres:
+Then we have to add twitter database to postgres:
 
 * First of all we init session in postgres.
 
@@ -98,12 +98,13 @@ public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
 
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
-##### I have created scripts that generate lots of data to add to twitter database. 
+
+##### I have created _Python_ scripts which generate lots of data to add to twitter database. 
 ##### They are placed in Postgres/Funcions populate. 
-##### There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute and redirect the output to a file.
+##### There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute the program and redirect the output to a file.
 
   First we create information of hashtags table with our script and put it in /tmp directory:
-`[user@host ]$ python funciopopulate_hashtags.py > /tmp/hashtags.csv`
+`[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
 
   Then we import data from /tmp to twitter database:
  `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
@@ -114,16 +115,16 @@ public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
  
 Table                  | Script
 -----------------------|-------------------------------------------
-comentaris             | funciopopulate_comentaris.py    
-fotos                  | funciopopulate_fotos.py   
-hashtags               | funciopopulate_hashtags.py    
-hashtagstweets         | funciopopulate_hashtagstweets.py    
-likes                  | funciopopulate_likes.py    
-retweets               | funciopopulate_retweets.py   
-seguidors              | funciopopulate_seguidors.py    
-tweets                 | funciopopulate_tweets.py    
-usuaris                | funciopopulate_usuaris.py   
-usuarislikescomentaris | funciopopulate_usuarislikescomentaris.py    
+comentaris             | populate_comentaris.py    
+fotos                  | populate_fotos.py   
+hashtags               | populate_hashtags.py    
+hashtagstweets         | populate_hashtagstweets.py    
+likes                  | populate_likes.py    
+retweets               | populate_retweets.py   
+seguidors              | populate_seguidors.py    
+tweets                 | populate_tweets.py    
+usuaris                | populate_usuaris.py   
+usuarislikescomentaris | populate_usuarislikescomentaris.py    
 
 
 ##### In order to add the hashtag to the tweet, I have created a function in PLPGSQL that adds the hashtag to each tweet.
@@ -154,13 +155,9 @@ First of all we need to add Mongo's repository to our machine.
 
 And we add:
 > [mongodb]
-
 > name=MongoDB Repository
-
 > baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-
 > gpgcheck=0
-
 > enabled=1
 
 
@@ -199,14 +196,12 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 `[root@host ]# mongo`
 
-
 * Once we have entered to Mongo, we have to choose our database.
 
 `> use twitter`
 
 * Later we can see our collections.
 `> show collections`
-
 
 * To select collections we want to work with we should specify in our find sentence.
 
@@ -222,7 +217,7 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 As I said at the very beginning of this project syntax in MongoDB differs from Postgres.
 
-Here I show you basic queries in Postgres and their translation into Mongo's syntax.
+Here you can see basic queries in Postgres and their translation into Mongo's syntax.
 
 
 PostgreSQL                                                                                                        | MongoDB
@@ -237,24 +232,48 @@ PostgreSQL                                                                      
 
 ## Docker interface
 
-To test our databases I have created two different Dockers both of them include the entire database.
+To test our databases I have created two different Dockers. Both of them include the entire twitter database.
 
 ### Postgres
 
-* First of all we download and run Postgres docker from DockerHub, where I have the image already created.
+* First of all we download and run Postgres docker from DockerHub, where I have te image already created. 
 
 `docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
-* Later we run our queries using psql (user password is **jupiter**)
+* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+
+* Later we run our queries using psql (user password is **jupiter**). You should wait a little bit until twitter database is ready (about 1 minute).
 
 `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
 
+`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
 
-
-
-
+`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
 
 
 ### MongoDB
 
+* First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
 
+`docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
+
+* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+
+* Later we run our queries using mongo.
+
+`mongo --host 172.17.0.3:27017 twitter`
+
+* When we are inside mongo shell we can start running our queries.
+
+`MongoDB shell version: 2.6.12
+ connecting to: 172.17.0.3:27017/twitter
+ > db.users.find()`
+ 
+`MongoDB shell version: 2.6.12
+ connecting to: 172.17.0.3:27017/twitter
+ > db.tweets.find({"text_tweet":/#sale/i}).count()`
+
+`MongoDB shell version: 2.6.12
+ connecting to: 172.17.0.3:27017/twitter
+ > db.tweets.find({"text_tweet":/#/i})`
+ 
