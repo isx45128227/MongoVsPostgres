@@ -13,6 +13,18 @@ twitter=# UPDATE tweets SET text_tweet = text_tweet || ' que la seva ocupacio ha
 twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;
 twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%maxim%' ORDER BY usuaris.telefon;
 
+
+
+
+psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM comentaris JOIN tweets ON tweets.id_tweet=comentaris.id_tweet JOIN usuarislikescomentaris ON comentaris.id_comentari=usuarislikescomentaris.id_comentari WHERE comentaris.id_tweet=3;"
+
+psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT retweets.id_retweet,retweets.id_usuari_retweet,retweets.data_retweet,retweets.text_retweet FROM tweets JOIN retweets ON tweets.id_tweet=retweets.id_tweet JOIN usuaris ON usuaris.id_usuari=retweets.id_usuari_retweet WHERE tweets.id_tweet=3;'
+
+psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM tweets JOIN retweets ON tweets.id_tweet=retweets.id_tweet JOIN usuaris ON usuaris.id_usuari=retweets.id_usuari_retweet WHERE tweets.id_tweet=3;'
+
+psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT comentaris.id_usuari_comentari AS "id user", comentaris.text_comentari AS "text", usuarislikescomentaris.id_usuari AS "usuari likecomentari", usuarislikescomentaris.id_comentari AS "comid" FROM comentaris JOIN tweets ON tweets.id_tweet=comentaris.id_tweet JOIN usuarislikescomentaris ON usuarislikescomentaris.id_comentari=comentaris.id_comentari WHERE comentaris.id_tweet=3;'
+
+
 twitter=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%maxim%' ORDER BY usuaris.telefon;
                                                QUERY PLAN                                                
 ---------------------------------------------------------------------------------------------------------
