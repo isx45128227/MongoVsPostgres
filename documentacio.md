@@ -146,7 +146,7 @@ usuarislikescomentaris | funciopopulate_usuarislikescomentaris.py
 
 As a superuser we have to run different commands in ordrer to install MongoDB in our system:
 
-* Install postgres package.
+* Install mongodb package.
 
 First of all we need to add Mongo's repository to our machine.
 
