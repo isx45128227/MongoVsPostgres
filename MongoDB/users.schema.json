@@ -1,0 +1,25 @@
+{
+    "id_usuari": {"type": "number"},
+    "nom": {"type": "string"},
+    "cognoms": {"type": "string"},
+    "password": {"type": "string"},
+    "username": {"type": "string"},
+    "telefon": {"type": "string"},
+    "data_alta": {"type": "date"},
+    "descripcio": {"type": "string"},
+    "ciutat": {"type": "string"},
+    "url": {"type": "string"},
+    "idioma": {"type": "string"},
+    "email": {"type": "string"},
+    
+    "seguidors": {
+          "type": "array",
+          "items": { 
+              "type":"object",
+              "properties": {
+                  "data_seguidor": { "type": "string"},
+                  "id_usuari_seguidor": { "type": "number"}
+              }
+          }           
+    }
+}

@@ -1,0 +1,89 @@
+{
+    "_id": {"object":"id"},
+    
+    "text_tweet": {
+          "type": "string"
+    },
+    
+    "id_usuari": {
+          "type": "number"
+    },
+    
+    "data_tweet": {
+          "type": "date"
+    },
+    
+    "foto":{
+          "type": "array",
+          "items": { 
+			  "type":"object",
+			  "properties": {
+                  "data_foto":{ "type": "date"},
+                  "text_foto":{ "type": "string"}
+              }
+          }
+    },
+    
+    "geo": { "type": "object" },
+    "hashtags": {
+          "type": "array",
+          "items": { 
+			  "type":"object",
+			  "properties": {
+                  "text":{ "type": "string"},
+                  "data_creacio":{ "type": "date"}
+              }
+          }
+    },
+    
+    "likes": {
+          "type": "array",
+          "items": { 
+			  "type":"object",
+			  "properties": {
+                  "usuari_like":{ "type": "number"},
+                  "data_like":{ "type": "date"},
+                  "esborrat": {"type": "boolean"}
+              }
+          }
+    },
+    
+    "comentaris": {
+          "type": "array",
+          "items": { 
+			  "type":"object",
+			  "properties": {
+                  "usuari_comentari":{ "type": "number"},
+                  "data_comentari":{ "type": "date"},
+                  "text_comentari":{ "type": "string"},
+                  "likes_comentari":{ 
+                      "type": "array",
+                      "items": { 
+			             "type":"object",
+			             "properties": {
+                                 "usuari_like_comentari":{ "type": "number"}
+                         }
+                      }
+                  },
+                  "esborrat": {"type": "boolean"}
+              }
+           }
+    },
+    
+    "num_likes": { "type": "number"},
+    "num_retweets": { "type": "number"},
+    "num_comments": { "type": "number"},
+    
+    "retweets": { 
+        "type": "array",
+        "items": { 
+			  "type":"object",
+			  "properties": {
+                  "id_usuari": {"type": "number"},
+                  "data_retweet": {"type": "date"},
+                  "text_retweet": {"type": "string"},
+                  "esborrat": {"type": "boolean"}
+              }
+         }
+    }
+}
