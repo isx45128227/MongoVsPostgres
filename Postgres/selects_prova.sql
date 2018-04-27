@@ -63,3 +63,51 @@ twitterindexs=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON twe
                ->  Seq Scan on usuaris  (cost=0.00..36436.99 rows=999999 width=18)
 (14 rows)
 
+
+
+
+
+
+
+--- POSTGRES TO JSON
+-- COLLECTION USERS
+
+SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;
+
+
+-- COLLECTION TWEETS
+SELECT row_to_json(tweets) FROM 
+    (SELECT id_tweet AS "_id",
+    text_tweet,
+    id_usuari,
+    data_tweet,
+    (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
+    (SELECT row_to_json(row(lat,lon))) AS "geo",
+    (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
+    (SELECT array_to_json(array_agg(row_to_json(likes))) FROM (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
+    (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
+    (SELECT count(*) FROM likes) AS "num_likes",
+    (SELECT count(*) FROM retweets) AS "num_retweets",
+    (SELECT count(*) FROM comentaris) AS "num_comments",
+    (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
+FROM tweets) tweets;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
