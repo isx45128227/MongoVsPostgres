@@ -1,3 +1,20 @@
+
+-- COPY TABLES
+
+COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;
+COPY usuaris FROM '/tmp/usuaris.csv' DELIMITER ',' CSV HEADER;
+COPY tweets(id_tweet,text_tweet,id_usuari,data_tweet) FROM '/tmp/tweets.csv' DELIMITER ',' CSV HEADER;
+COPY fotos(id_foto,text_foto,id_tweet,data_foto) FROM '/tmp/fotos.csv' DELIMITER ',' CSV HEADER;
+COPY likes(id_like,data_like,id_usuari_like,id_tweet) FROM '/tmp/likes.csv' DELIMITER ',' CSV HEADER;
+COPY seguidors FROM '/tmp/seguidors.csv' DELIMITER ',' CSV HEADER;
+COPY retweets(id_retweet,data_retweet,text_retweet,id_usuari_retweet,id_tweet) FROM '/tmp/retweets.csv' DELIMITER ',' CSV HEADER;
+COPY comentaris(id_comentari,data_comentari,text_comentari,id_usuari_comentari,id_tweet) FROM '/tmp/comentaris.csv' DELIMITER ',' CSV HEADER;
+COPY hashtagstweets FROM '/tmp/hashtagstweets.csv' DELIMITER ',' CSV HEADER;
+COPY usuarislikescomentaris FROM '/tmp/usuarislikescomentaris.csv' DELIMITER ',' CSV HEADER;
+
+
+-- SELECTS AMB JOIN
+
 twitter=# SELECT * FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet JOIN seguidors a ON usuaris.id_usuari=a.id_usuari_seguit JOIN usuaris b ON b.id_usuari=a.id_usuari_seguit WHERE text_tweet LIKE '%500%' ORDER BY usuaris.telefon;
 
 twitter=# EXPLAIN SELECT * FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet JOIN seguidors a ON usuaris.id_usuari=a.id_usuari_seguit JOIN usuaris b ON b.id_usuari=a.id_usuari_seguit WHERE text_tweet LIKE '%500%' ORDER BY usuaris.telefon;
@@ -6,15 +23,13 @@ twitter=# SELECT * FROM tweets WHERE text_tweet LIKE '% 500%';
 
 twitter=# SELECT * FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet JOIN seguidors a ON usuaris.id_usuari=a.id_usuari_seguit JOIN usuaris b ON b.id_usuari=a.id_usuari_seguit WHERE text_tweet LIKE '%500%' AND usuaris.id_usuari=93177 ORDER BY usuaris.telefon;
 
-
 twitter=# UPDATE tweets SET text_tweet = text_tweet || ' que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres.';
-
 
 twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;
 twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%maxim%' ORDER BY usuaris.telefon;
 
 
-
+-- SELECTS psql
 
 psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM comentaris JOIN tweets ON tweets.id_tweet=comentaris.id_tweet JOIN usuarislikescomentaris ON comentaris.id_comentari=usuarislikescomentaris.id_comentari WHERE comentaris.id_tweet=3;"
 
@@ -24,6 +39,9 @@ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM tweets JOIN re
 
 psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT comentaris.id_usuari_comentari AS "id user", comentaris.text_comentari AS "text", usuarislikescomentaris.id_usuari AS "usuari likecomentari", usuarislikescomentaris.id_comentari AS "comid" FROM comentaris JOIN tweets ON tweets.id_tweet=comentaris.id_tweet JOIN usuarislikescomentaris ON usuarislikescomentaris.id_comentari=comentaris.id_comentari WHERE comentaris.id_tweet=3;'
 
+
+
+-- EXPLAIN SELECT
 
 twitter=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%maxim%' ORDER BY usuaris.telefon;
                                                QUERY PLAN                                                
@@ -65,10 +83,6 @@ twitterindexs=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON twe
 
 
 
-
-
-
-
 --- POSTGRES TO JSON
 -- COLLECTION USERS
 
@@ -80,8 +94,6 @@ COPY (SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,user
 FROM usuaris) users) TO '/tmp/users.json';
 
 psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users ORDER BY users.id_usuari LIMIT 1000;' > users.json
-
-
 
 
 -- COLLECTION TWEETS
@@ -100,23 +112,3 @@ SELECT row_to_json(tweets) FROM
     (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
     (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
 FROM tweets) tweets;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
