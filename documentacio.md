@@ -50,10 +50,44 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 `[root@host ]# passwd postgres`
 
 
+### MongoDB installation
 
-### Database twitter 
+As a superuser we have to run different commands in ordrer to install MongoDB in our system:
 
-Then we have to add twitter database to postgres:
+* Install mongodb package.
+
+First of all we need to add Mongo's repository to our machine.
+
+`[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
+
+And we add:
+> [mongodb]
+> name=MongoDB Repository
+> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+> gpgcheck=0
+> enabled=1
+
+
+Later we install the package:
+
+`[root@host ]# dnf -y install mongodb-org mongodb-org-server`
+
+* Start mongo service.
+
+`[root@host ]# systemctl start mongod`
+
+* Enable mongo service.
+
+`[root@host ]# systemctl enable mongod`
+
+
+---
+
+
+Once we have our system ready, we have to install the database on both interfaces.
+
+
+### Database twitter on Postgres
 
 * First of all we init session in postgres.
 
@@ -99,19 +133,19 @@ public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
 
-##### I have created _Python_ scripts which generate lots of data to add to twitter database. 
-##### They are placed in Postgres/Funcions populate. 
-##### There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute the program and redirect the output to a file.
+    I have created _Python_ scripts which generate lots of data to add to twitter database. 
+    They are placed in Postgres/Funcions populate. 
+    There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute the program and redirect the output to a file.
 
-  First we create information of hashtags table with our script and put it in /tmp directory:
+    First we create information of hashtags table with our script and put it in /tmp directory:
 `[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
 
-  Then we import data from /tmp to twitter database:
+    Then we import data from /tmp to twitter database:
  `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
 
-  That is the process we should follow for each table.
+    That is the process we should follow for each table.
   
-##### Here I show the script name and the table associated with
+#### Here I show the script name and the table associated with
  
 Table                  | Script
 -----------------------|-------------------------------------------
@@ -143,39 +177,59 @@ usuarislikescomentaris | populate_usuarislikescomentaris.py
 
 ---
 
-### MongoDB installation
+### Postgres database to MongoDB
 
-As a superuser we have to run different commands in ordrer to install MongoDB in our system:
+Once we have created our Postgres database we can export all data into _json_ format. Postgres has different functions that can convert from Postgres to _json_ files.
+The only thing we have to do is to execute the function and see the result.
 
-* Install mongodb package.
-
-First of all we need to add Mongo's repository to our machine.
-
-`[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
-
-And we add:
-> [mongodb]
-> name=MongoDB Repository
-> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-> gpgcheck=0
-> enabled=1
+`twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;`
 
 
-Later we install the package:
+Result: `{"id_usuari":12592,
+          "nom":"pere",
+          "cognoms":"goñi",
+          "password":"pass12592",
+          "username":"pere_goñi_12592",
+          "telefon":"698543568",
+          "data_alta":"2018-04-23T09:29:00",
+          "descripcio":"usuari peregoñi",
+          "ciutat":"colonia",
+          "url":"https://www.twitter.com/pere_goñi12592",
+          "idioma":"castella",
+          "email":"peregoñi12592@gmail.com",
+          "seguidors":null}`
 
-`[root@host ]# dnf -y install mongodb-org mongodb-org-server`
+Here we are creating an output in _json_ format with all information about users and their followers.
 
-* Start mongo service.
+That's fine if we only want to see the output, but we need it to create our full database _json_ files.
 
-`[root@host ]# systemctl start mongod`
+Mongodb's organization is different from Postgres, so we are going to create **two** different collections for mongodb called **users** and **tweets**.
 
-* Enable mongo service.
+* This command obtain users data and redirects the output to a file, so as to have all users information (user password is **jupiter**). 
 
-`[root@host ]# systemctl enable mongod`
+`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;' > users.json`
+
+* This command obtain tweets data and redirects the output to a file, so as to have all tweets information (user password is **jupiter**). 
+
+`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
+    (SELECT id_tweet AS "_id",
+    text_tweet,
+    id_usuari,
+    data_tweet,
+    (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
+    (SELECT row_to_json(row(lat,lon))) AS "geo",
+    (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
+    (SELECT array_to_json(array_agg(row_to_json(likes))) FROM (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
+    (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
+    (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
+    (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
+    (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
+    (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
+FROM tweets) tweets;' > tweets.json`
 
 
 
-### Database twitter 
+### Database twitter on MongoDB
 
 Then we have to add the twitter database to mongo. In this case is not necessary to run the interface. We can directly import database from _json_ or _csv_ file.
 
