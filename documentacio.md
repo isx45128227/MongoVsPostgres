@@ -24,7 +24,6 @@ First of all, before we start analyzing Postgres and Mongo we should prepare the
 To do it we should install *Postgres* and *Mongo* in our system.
 
 
-
 ### Postgres installation
 
 As a superuser we have to run different commands in ordrer to install Postgres in our system:
@@ -138,10 +137,10 @@ public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
     There is one script for each table, and the only thing we have to do to obtain that big amount of data is to execute the program and redirect the output to a file.
 
     First we create information of hashtags table with our script and put it in /tmp directory:
-`[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
+    `[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
 
     Then we import data from /tmp to twitter database:
- `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
+    `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
 
     That is the process we should follow for each table.
   
@@ -207,7 +206,7 @@ Mongodb's organization is different from Postgres, so we are going to create **t
 
 * This command obtain users data and redirects the output to a file, so as to have all users information (user password is **jupiter**). 
 
-`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;' > users.json`
+`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users ORDER BY users.id_usuari;' > users.json`
 
 * This command obtain tweets data and redirects the output to a file, so as to have all tweets information (user password is **jupiter**). 
 
@@ -282,11 +281,10 @@ PostgreSQL                                                                      
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
 
 
-
-
 ## Docker interface
 
 To test our databases I have created two different Dockers. Both of them include the entire twitter database.
+
 
 ### Postgres
 
@@ -317,7 +315,7 @@ To test our databases I have created two different Dockers. Both of them include
 
 `mongo --host 172.17.0.3:27017 twitter`
 
-* When we are inside mongo shell we can start running our queries.
+* When we are inside mongo shell we can start running different queries.
 
 `MongoDB shell version: 2.6.12
  connecting to: 172.17.0.3:27017/twitter
@@ -330,4 +328,3 @@ To test our databases I have created two different Dockers. Both of them include
 `MongoDB shell version: 2.6.12
  connecting to: 172.17.0.3:27017/twitter
  > db.tweets.find({"text_tweet":/#/i})`
- 
