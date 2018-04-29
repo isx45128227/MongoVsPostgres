@@ -12,8 +12,8 @@ RUN dnf -y install mongodb-org mongodb-org-server
 VOLUME ["/data/db"]
 RUN /usr/bin/mongod --fork --logpath /var/log/mongod.log
 
-RUN /usr/bin/mongoimport --host 127.0.0.1 --db twitter --collection users --file /tmp/users.json --jsonArray
-RUN /usr/bin/mongoimport --host 127.0.0.1 --db twitter --collection tweets --file /tmp/tweets.json --jsonArray
+RUN /usr/bin/mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray
+RUN /usr/bin/mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray
 
 EXPOSE 27017
 
