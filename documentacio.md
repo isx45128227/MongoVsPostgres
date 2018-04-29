@@ -61,9 +61,13 @@ First of all we need to add Mongo's repository to our machine.
 
 And we add:
 > [mongodb]
+
 > name=MongoDB Repository
+
 > baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+
 > gpgcheck=0
+
 > enabled=1
 
 
@@ -202,11 +206,46 @@ Here we are creating an output in _json_ format with all information about users
 
 That's fine if we only want to see the output, but we need it to create our full database _json_ files.
 
-Mongodb's organization is different from Postgres, so we are going to create **two** different collections for mongodb called **users** and **tweets**.
+Mongodb's organization is different from Postgres, so we are going to create **two** different collections for mongodb called **users** and **tweets**. 
+
+Before we create the database in _json_ format, we must add indexes to Postgres database in order to reduce the number of accesses to each table. Every index is created in a field related to another table.
+
+#### TWEETS
+`CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+`CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+
+#### COMENTARIS 
+`CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+`CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+
+#### LIKES
+`CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
+`CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
+
+#### USUARISLIKESCOMENTARIS
+`CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
+`CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
+
+#### FOTOS
+`CREATE INDEX id_tweet3_idx ON fotos (id_tweet);`
+
+#### RETWEETS
+`CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
+`CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
+
+#### HASHTAGSTWEETS
+`CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
+`CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
+
+#### SEGUIDORS
+`CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
+`CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+
+After adding the indexes we are ready to create _json_ files. We just need to follow the next steps:
 
 * This command obtain users data and redirects the output to a file, so as to have all users information (user password is **jupiter**). 
 
-`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users ORDER BY users.id_usuari;' > users.json`
+`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users ORDER BY users.id_usuari;' > /tmp/users.json`
 
 * This command obtain tweets data and redirects the output to a file, so as to have all tweets information (user password is **jupiter**). 
 
@@ -224,9 +263,7 @@ Mongodb's organization is different from Postgres, so we are going to create **t
     (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
     (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
     (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
-FROM tweets) tweets;' > tweets.json`
-
-
+FROM tweets) tweets;' > /tmp/tweets.json`
 
 ### Database twitter on MongoDB
 
@@ -243,27 +280,31 @@ In this case we have **two** json files, the first one includes **tweets collect
 `mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
 
 
-##### Once we have added all information to twitter database we can start using our twitter database. 
+##### Now we have finished creating twitter database on MongoDB. 
+
+
+##### Once we have added all information to twitter database we can start using the database. 
 
 * First of all we enter to mongo interface.
 
 `[root@host ]# mongo`
 
-* Once we have entered to Mongo, we have to choose our database.
+* Once we have entered to Mongo, we have to choose the database.
 
 `> use twitter`
 
-* Later we can see our collections.
+* Later we can see different collections.
 `> show collections`
 
-* To select collections we want to work with we should specify in our find sentence.
+* To select collections we want to work with we should specify in the find sentence.
 
    Working on users collection:
    `> db.users.find()`
     
-    
    or working on tweets collection: 
    `> db.tweets.find()`
+
+
 
 
 ### Query Documents
@@ -283,10 +324,10 @@ PostgreSQL                                                                      
 
 ## Docker interface
 
-To test our databases I have created two different Dockers. Both of them include the entire twitter database.
+To test queries in Postgres and Mongo interfaces I have created two different Dockers. Both of them include the entire twitter database.
 
 
-### Postgres
+### Postgres docker
 
 * First of all we download and run Postgres docker from DockerHub, where I have te image already created. 
 
@@ -303,13 +344,13 @@ To test our databases I have created two different Dockers. Both of them include
 `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
 
 
-### MongoDB
+### MongoDB docker
 
 * First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
 
 `docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
-* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
 
 * Later we run our queries using mongo.
 
@@ -317,14 +358,14 @@ To test our databases I have created two different Dockers. Both of them include
 
 * When we are inside mongo shell we can start running different queries.
 
-`MongoDB shell version: 2.6.12
- connecting to: 172.17.0.3:27017/twitter
- > db.users.find()`
+```MongoDB shell version: 2.6.12
+connecting to: 172.17.0.3:27017/twitter
+> db.users.find()```
  
-`MongoDB shell version: 2.6.12
- connecting to: 172.17.0.3:27017/twitter
- > db.tweets.find({"text_tweet":/#sale/i}).count()`
+```MongoDB shell version: 2.6.12
+connecting to: 172.17.0.3:27017/twitter
+> db.tweets.find({"text_tweet":/#sale/i}).count()```
 
-`MongoDB shell version: 2.6.12
- connecting to: 172.17.0.3:27017/twitter
- > db.tweets.find({"text_tweet":/#/i})`
+```MongoDB shell version: 2.6.12
+connecting to: 172.17.0.3:27017/twitter
+> db.tweets.find({"text_tweet":/#/i})```
