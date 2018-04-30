@@ -212,18 +212,22 @@ Before we create the database in _json_ format, we must add indexes to Postgres 
 
 #### TWEETS
 `CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+
 `CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
 
 #### COMENTARIS 
 `CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+
 `CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
 
 #### LIKES
 `CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
+
 `CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
 
 #### USUARISLIKESCOMENTARIS
 `CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
+
 `CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
 
 #### FOTOS
@@ -231,23 +235,26 @@ Before we create the database in _json_ format, we must add indexes to Postgres 
 
 #### RETWEETS
 `CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
+
 `CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
 
 #### HASHTAGSTWEETS
 `CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
+
 `CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
 
 #### SEGUIDORS
 `CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
+
 `CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
 
 After adding the indexes we are ready to create _json_ files. We just need to follow the next steps:
 
-* This command obtain users data and redirects the output to a file, so as to have all users information (user password is **jupiter**). 
+* Obtain users data and redirect the output to a file, so as to have all users information (user password is **jupiter**). 
 
 `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users ORDER BY users.id_usuari;' > /tmp/users.json`
 
-* This command obtain tweets data and redirects the output to a file, so as to have all tweets information (user password is **jupiter**). 
+* Obtain tweets data and redirect the output to a file, in order2 to have all tweets information (user password is **jupiter**). 
 
 `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
     (SELECT id_tweet AS "_id",
@@ -305,7 +312,7 @@ In this case we have **two** json files, the first one includes **tweets collect
    `> db.tweets.find()`
 
 
-
+---
 
 ### Query Documents
 
@@ -321,6 +328,7 @@ PostgreSQL                                                                      
 `SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
 
+---
 
 ## Docker interface
 
@@ -358,14 +366,14 @@ To test queries in Postgres and Mongo interfaces I have created two different Do
 
 * When we are inside mongo shell we can start running different queries.
 
-```MongoDB shell version: 2.6.12
+``` MongoDB shell version: 2.6.12
 connecting to: 172.17.0.3:27017/twitter
-> db.users.find()```
+> db.users.find()
  
-```MongoDB shell version: 2.6.12
+MongoDB shell version: 2.6.12
 connecting to: 172.17.0.3:27017/twitter
-> db.tweets.find({"text_tweet":/#sale/i}).count()```
+> db.tweets.find({"text_tweet":/#sale/i}).count()
 
-```MongoDB shell version: 2.6.12
+MongoDB shell version: 2.6.12
 connecting to: 172.17.0.3:27017/twitter
 > db.tweets.find({"text_tweet":/#/i})```
