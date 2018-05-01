@@ -2,8 +2,6 @@
 
 # Mongorestore
 
-mkdir /dump/
-
 cp /tmp/twitter/users.bson /dump/
 
 mongorestore --collection users --db twitter /dump/
