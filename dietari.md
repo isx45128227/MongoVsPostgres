@@ -13,3 +13,4 @@ Dia | Objectius | Tasca realitzada | Hores
 27/04/2018 | Construcció estructura BBDD MongoDB i dades Twitter a MongoDB. | Construcció funcions Postgres que creen les dades de les taules en format JSON. Documentació de la tasca realitzada.| 4 hores 
 28/04/2018 | Construcció dades Twitter a MongoDB. | Construcció dades Twitter a MongoDB.| 2 hores 
 29/04/2018 | Construcció dades Twitter a MongoDB. | Construcció dades Twitter a MongoDB.| 5 hores 
+01/05/2018 | Docker MongoDB. | Construcció Docker MongoDB. | 3 hores 
