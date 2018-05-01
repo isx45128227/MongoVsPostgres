@@ -1,6 +1,6 @@
 # Project documentation
 
-The aim of this project is to let you know the great potential of NonSQL databases when we have to process big data volumes. 
+The aim of this project is to let you know the great potential of NoSQL databases when we have to process big data volumes. 
 
 Syntax used in MongoDB differs from Postgres, but it's really simple to understand. In this project you will see how to use syntax in MongoDB and Postgres.
 
@@ -341,8 +341,6 @@ To test queries in Postgres and Mongo interfaces I have created two different Do
 
 `docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
-* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
-
 * Later we run our queries using psql (user password is **jupiter**). You should wait a little bit until twitter database is ready (about 1 minute).
 
 `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
@@ -352,13 +350,23 @@ To test queries in Postgres and Mongo interfaces I have created two different Do
 `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
 
 
+* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+
+
 ### MongoDB docker
 
 * First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
 
 `docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
-* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
+* There is a problem with Docker and MongoDB. Docker interface does not allow Mongo to keep database data, so before we start using our docker mongo we have to restore information.
+
+* First of all we enter into the docker.
+
+`docker exec -it mongotwitter /bin/bash`
+
+* Then we run a script that regenerates all twitter database.
+`./tmp/restore.sh`
 
 * Later we run our queries using mongo.
 
@@ -366,14 +374,12 @@ To test queries in Postgres and Mongo interfaces I have created two different Do
 
 * When we are inside mongo shell we can start running different queries.
 
-``` MongoDB shell version: 2.6.12
-connecting to: 172.17.0.3:27017/twitter
-> db.users.find()
+`> db.users.find()`
  
-MongoDB shell version: 2.6.12
-connecting to: 172.17.0.3:27017/twitter
-> db.tweets.find({"text_tweet":/#sale/i}).count()
+`> db.tweets.find({"text_tweet":/#sale/i}).count()`
 
-MongoDB shell version: 2.6.12
-connecting to: 172.17.0.3:27017/twitter
-> db.tweets.find({"text_tweet":/#/i})```
+`> db.tweets.find({"text_tweet":/#/i})`
+
+
+* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
+
