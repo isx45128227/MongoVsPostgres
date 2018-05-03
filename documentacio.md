@@ -92,7 +92,7 @@ We have to create two different structures, one used in Postgres and the other o
  
 The structure I have chosen for Postgres is:
 
-![Postgres Twitter Structure](Postgres/twitter.png)
+![Postgres Twitter Structure](Postgres/imatges/twitter.png)
 
 
 The structure for MongoDB differs from Postgres because of the organization. MongoDB use collections instead of tables, 
@@ -100,13 +100,13 @@ there is no need to create one collection for each table used in Postgres so I'v
 
 * Users 
 
-![Mongo users Twitter Structure](MongoDB/users.png)
+![Mongo users Twitter Structure](MongoDB/imatges/users.png)
 
 
 * Tweets 
 
-![Mongo tweets Twitter Structure](MongoDB/tweets1.png)
-![Mongo tweets Twitter Structure](MongoDB/tweets2.png)
+![Mongo tweets Twitter Structure](MongoDB/imatges/tweets1.png)
+![Mongo tweets Twitter Structure](MongoDB/imatges/tweets2.png)
 
 
 Once we have defined the structure we are going to use, we can start creating the database.
