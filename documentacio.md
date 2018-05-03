@@ -264,9 +264,11 @@ That's fine if we only want to see the output, but we need it to create our full
 MongoDB's organization is different from Postgres, so we are going to create **two** different 
 collections for MongoDB called **users** and **tweets**. 
 
+As I have tested, two days after executing the function the results haven't appeared (we must take into account that there are more than 3 million rows). 
+To solve this I added indexes to Postgres database in order to reduce the number of accesses to each table and to obtain the result faster 
+(if we don't use indexes it will cost a lot of time to generate _json_ files).
 
-Before we create the database in _json_ format, we must add indexes to Postgres database in order to 
-reduce the number of accesses to each table. Every index is created in a field related to another table.
+Every index is created in a field that is linked to another table.
 
 
 #### TWEETS
@@ -285,35 +287,35 @@ reduce the number of accesses to each table. Every index is created in a field r
 
 #### LIKES
 
-`twitter=# CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
+`twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
 
-`twitter=# CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
+`twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
 
 
 #### USUARISLIKESCOMENTARIS
 
-`twitter=# CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
+`twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
 
-`twitter=# CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
+`twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
 
 
 #### FOTOS
 
-`twitter=# CREATE INDEX id_tweet3_idx ON fotos (id_tweet);`
+`twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
 
 
 #### RETWEETS
 
-`twitter=# CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
+`twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
 
-`twitter=# CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
+`twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
 
 
 #### HASHTAGSTWEETS
 
-`twitter=# CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
+`twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
 
-`twitter=# CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
+`twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
 
 #### SEGUIDORS
 
@@ -333,29 +335,36 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
 
 * Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
-    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
+    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+        'SELECT row_to_json(tweets) FROM 
         (SELECT id_tweet AS "_id",
         text_tweet,
         id_usuari,
         data_tweet,
         (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM 
-        (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
+          (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
         (SELECT row_to_json(row(lat,lon))) AS "geo",
         (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM 
-        (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
-        ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
+          (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
+          ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
         (SELECT array_to_json(array_agg(row_to_json(likes))) FROM 
-        (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
+          (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
         (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM 
-        (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
-        (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" 
-        FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
+          (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
+          (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" 
+          FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
         (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
         (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
         (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
         (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM 
-        retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
+          retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
     FROM tweets) tweets;' > /tmp/tweets.json`
+
+
+Function row_to_json converts one row into _json_ document. That means that we can transform every row of our table in Postgres into different documents in _json_ format. 
+
+Function array_agg creates an array. In this case we use this function to create different arrays of objects.
+
 
 
 ### Database Twitter on MongoDB
@@ -419,6 +428,58 @@ PostgreSQL                                                                      
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
 
 ---
+
+
+## Testing query speed
+
+Once we have ready our system with both interfaces, we are able to start testing different queries to compare speed rates.
+
+
+* First of all we are going to test both databases without indexes, which increase their performance.
+
+### Postgres
+
+* To begin with we should remove indexes we have created before.
+
+    There is a script we can use to DROP all indexes. It is placed in Postgres/delete_indexs.sql.
+    We enter to Twitter database and import the script.
+    
+    `twitter=# \i /tmp/delete_indexs.sql` 
+
+
+* Now we are ready to execute different queries.
+
+    * First we are going to find tweets that contains the hashtag #chip.
+
+        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        
+    * We can obtain the cost by doing:
+    
+        `twitter=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        
+        ![Postgres query1 Twitter](Postgres/imatges/query1.png)
+    
+    
+
+
+
+### MongoDB
+
+* First we are going to find tweets that contains the hashtag #chip.
+
+    `> db.tweets.find({ text_tweet:"#chip" })`
+        
+* We can obtain the cost by doing:
+    
+    `> db.tweets.find({ text_tweet:"#chip" }).explain("executionStats")`
+        
+    ![Mongo query1 Twitter](MongoDB/imatges/query1.png)
+
+
+
+
+
+
 
 
 ## Docker interface
