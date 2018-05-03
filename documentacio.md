@@ -152,6 +152,7 @@ an _id_ field that is bigserial and this serial is a sequence of numbers startin
 
     I have created _Python_ scripts which generate lots of data to add to twitter database. 
     They are placed in Postgres/Funcions populate. 
+    
     There is one script for each table, and the only thing we have to do to obtain 
     that big amount of data is to execute the program and redirect the output to a file.
 
@@ -166,13 +167,21 @@ an _id_ field that is bigserial and this serial is a sequence of numbers startin
     * That is the process we should follow for each table.
 
         `twitter=# COPY usuaris FROM '/tmp/usuaris.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY tweets(id_tweet,text_tweet,id_usuari,data_tweet) FROM '/tmp/tweets.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY fotos(id_foto,text_foto,id_tweet,data_foto) FROM '/tmp/fotos.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY likes(id_like,data_like,id_usuari_like,id_tweet) FROM '/tmp/likes.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY seguidors FROM '/tmp/seguidors.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY retweets(id_retweet,data_retweet,text_retweet,id_usuari_retweet,id_tweet) FROM '/tmp/retweets.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY comentaris(id_comentari,data_comentari,text_comentari,id_usuari_comentari,id_tweet) FROM '/tmp/comentaris.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY hashtagstweets FROM '/tmp/hashtagstweets.csv' DELIMITER ',' CSV HEADER;`
+        
         `twitter=# COPY usuarislikescomentaris FROM '/tmp/usuarislikescomentaris.csv' DELIMITER ',' CSV HEADER;`
 
 
@@ -305,7 +314,7 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
     (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) 
     users ORDER BY users.id_usuari;' > /tmp/users.json`
 
-* Obtain tweets data and redirect the output to a file, in order2 to have all tweets information (user password is **jupiter**). 
+* Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
     `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
         (SELECT id_tweet AS "_id",
@@ -334,7 +343,7 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
 
 ### Database Twitter on MongoDB
 
-Then we have to add Twitter database to MongoDB. In this case is not necessary to run the interface. We can directly import database from _json_ or _csv_ file.
+Finally, we have to add Twitter database to MongoDB. In this case is not necessary to run the interface. We can directly import database from _json_ or _csv_ file.
 
 In this case we have **two** json files, the first one includes **tweets collection** and the second one includes **users collection**.
 
