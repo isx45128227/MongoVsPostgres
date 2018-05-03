@@ -14,3 +14,4 @@ Dia | Objectius | Tasca realitzada | Hores
 28/04/2018 | Construcció dades Twitter a MongoDB. | Construcció dades Twitter a MongoDB.| 2 hores 
 29/04/2018 | Construcció dades Twitter a MongoDB. | Construcció dades Twitter a MongoDB.| 5 hores 
 01/05/2018 | Docker MongoDB. | Construcció Docker MongoDB. | 3 hores 
+03/05/2018 | Documentació Postgres i Mongo. Comprovació Docker MongoDB. Crear queries lents | | 
