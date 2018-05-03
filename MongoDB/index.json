@@ -36,5 +36,14 @@
 	}
 ]
 
-
 > db.tweets.find({$text:{$search:"5000"}})
+
+var result = db.tweets.find({$text:{$search:"5009817"}},{"id_usuari":1})
+
+var a = db.users.find({"id_usuari":result.id_usuari})
+
+
+> while (result.hasNext()) { print tojson((result.next()))."id_usuari" }
+> var b=tojson(a)
+> b
+
