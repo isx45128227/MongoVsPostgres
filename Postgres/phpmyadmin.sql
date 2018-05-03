@@ -30,7 +30,7 @@ CREATE TABLE tweets
     data_tweet timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     lat float,
     lon float,
-    id_foto bigint UNSIGNED NOT NULL,
+    foto bigint UNSIGNED NOT NULL,
     esborrat boolean NOT NULL DEFAULT false
 );
 
@@ -114,7 +114,8 @@ CREATE TABLE likes
 
 
 
--- ALTER TABLEs
+
+-- ALTER TABLES
 
 ALTER TABLE tweets 
 ADD CONSTRAINT fk_usuari
@@ -122,7 +123,8 @@ FOREIGN KEY (id_usuari) REFERENCES usuaris(id_usuari);
 
 ALTER TABLE tweets 
 ADD CONSTRAINT fk_foto
-FOREIGN KEY (id_foto) REFERENCES fotos(id_foto);
+FOREIGN KEY (foto) REFERENCES fotos(id_foto);
+
 
 
 ALTER TABLE hashtagstweets 
@@ -134,6 +136,7 @@ ADD CONSTRAINT fk_hashtag
 FOREIGN KEY (id_hashtag) REFERENCES hashtags(id_hashtag);
 
 
+
 ALTER TABLE seguidors 
 ADD CONSTRAINT fk_usuari_seguit
 FOREIGN KEY (id_usuari_seguit) REFERENCES usuaris(id_usuari);
@@ -141,6 +144,7 @@ FOREIGN KEY (id_usuari_seguit) REFERENCES usuaris(id_usuari);
 ALTER TABLE seguidors 
 ADD CONSTRAINT fk_usuari_seguidor
 FOREIGN KEY (id_usuari_seguidor) REFERENCES usuaris(id_usuari);
+
 
 
 ALTER TABLE comentaris 
@@ -152,6 +156,7 @@ ADD CONSTRAINT fk_tweet_1
 FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
 
 
+
 ALTER TABLE usuarislikescomentaris
 ADD CONSTRAINT fk_usuari_2
 FOREIGN KEY (id_usuari) REFERENCES usuaris(id_usuari);
@@ -159,6 +164,7 @@ FOREIGN KEY (id_usuari) REFERENCES usuaris(id_usuari);
 ALTER TABLE usuarislikescomentaris
 ADD CONSTRAINT fk_comentari_1
 FOREIGN KEY (id_comentari) REFERENCES comentaris(id_comentari);
+
 
 
 ALTER TABLE retweets 
@@ -170,6 +176,7 @@ ADD CONSTRAINT fk_tweet_3
 FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
 
 
+
 ALTER TABLE likes 
 ADD CONSTRAINT fk_usuari_4
 FOREIGN KEY (id_usuari_like) REFERENCES usuaris(id_usuari);
@@ -177,6 +184,7 @@ FOREIGN KEY (id_usuari_like) REFERENCES usuaris(id_usuari);
 ALTER TABLE likes 
 ADD CONSTRAINT fk_tweet_4
 FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
+
 
 
 ALTER TABLE fotos 
