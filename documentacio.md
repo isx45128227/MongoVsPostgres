@@ -87,20 +87,35 @@ Later we install the package:
 
 Now we have both interfaces installed in our system so in order to have data to process, we should set up a database.
 
-In this project we are going to work with **Twitter** database. 
-It is created a structure with different tables and fields (but it could be different).
+In this project we are going to work with **Twitter** database.
+We have to create two different structures, one used in Postgres and the other one used in MongoDB.
+ 
+The structure I have chosen for Postgres is:
 
-The structure I have chosen is:
+![Postgres Twitter Structure](Postgres/twitter.png)
 
-![Twitter Structure](Postgres/twitter.png)
+
+The structure for MongoDB differs from Postgres because of the organization. MongoDB use collections instead of tables, 
+there is no need to create one collection for each table used in Postgres so I've tried to maintain the same tables and relations somehow.
+
+* Users 
+
+![Mongo users Twitter Structure](MongoDB/users.png)
+
+
+* Tweets 
+
+![Mongo tweets Twitter Structure](MongoDB/tweets1.png)
+![Mongo tweets Twitter Structure](MongoDB/tweets2.png)
 
 
 Once we have defined the structure we are going to use, we can start creating the database.
 
-It is created a script that includes Twitter database, so the only thing we have to do is to import that script.
-
 
 ### Database Twitter on Postgres
+
+It is created a script that includes Twitter database, so the only thing we have to do is to import that script.
+
 
 * First of all we init session in postgres.
 
@@ -185,7 +200,7 @@ an _id_ field that is bigserial and this serial is a sequence of numbers startin
         `twitter=# COPY usuarislikescomentaris FROM '/tmp/usuarislikescomentaris.csv' DELIMITER ',' CSV HEADER;`
 
 
-#### Here you can see the script name and the table associated with
+#### Script name and the table associated with
  
 Table                  | Script
 -----------------------|-------------------------------------------
@@ -240,7 +255,7 @@ Result: `{"id_usuari":12592,
           "url":"https://www.twitter.com/pere_goñi12592",
           "idioma":"castella",
           "email":"peregoñi12592@gmail.com",
-          "seguidors":null}`
+          "seguidors":null }`
 
 Here we are creating an output in _json_ format with all information about users and their followers.
 
@@ -249,74 +264,76 @@ That's fine if we only want to see the output, but we need it to create our full
 MongoDB's organization is different from Postgres, so we are going to create **two** different 
 collections for MongoDB called **users** and **tweets**. 
 
+
 Before we create the database in _json_ format, we must add indexes to Postgres database in order to 
 reduce the number of accesses to each table. Every index is created in a field related to another table.
 
 
 #### TWEETS
 
-`CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+`twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
 
-`CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+`twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
 
 
 #### COMENTARIS 
 
-`CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+`twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
 
-`CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+`twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
 
 
 #### LIKES
 
-`CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
+`twitter=# CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
 
-`CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
+`twitter=# CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
 
 
 #### USUARISLIKESCOMENTARIS
 
-`CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
+`twitter=# CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
 
-`CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
+`twitter=# CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
 
 
 #### FOTOS
 
-`CREATE INDEX id_tweet3_idx ON fotos (id_tweet);`
+`twitter=# CREATE INDEX id_tweet3_idx ON fotos (id_tweet);`
 
 
 #### RETWEETS
 
-`CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
+`twitter=# CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
 
-`CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
+`twitter=# CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
 
 
 #### HASHTAGSTWEETS
 
-`CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
+`twitter=# CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
 
-`CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
+`twitter=# CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
 
 #### SEGUIDORS
-`CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
 
-`CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+`twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
+
+`twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
 
 
 After adding the indexes we are ready to create _json_ files. We just need to follow the next steps:
 
 * Obtain users data and redirect the output to a file, so as to have all users information (user password is **jupiter**). 
 
-    `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,
+    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,
     telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
     (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) 
     users ORDER BY users.id_usuari;' > /tmp/users.json`
 
 * Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
-    `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
+    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
         (SELECT id_tweet AS "_id",
         text_tweet,
         id_usuari,
@@ -349,11 +366,11 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 * First we import users.
 
-    `mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
+    `[user@host ]$ mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
 
 * Then we import tweets.
 
-    `mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
+    `[user@host ]$ mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
 
 
 ##### Now we have finished creating Twitter database on MongoDB. 
@@ -414,16 +431,16 @@ Both of them include the entire twitter database.
 
 * First of all we download and run Postgres docker from DockerHub, where I have te image already created. 
 
-    `docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
+    `[user@host ]$ docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
 
 * Later we run our queries using psql (user password is **jupiter**). You should wait a little bit until twitter database is ready (about 1 minute).
 
-    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
+    `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
     
-    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
+    `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
     
-    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
+    `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
 
 
 
@@ -434,13 +451,13 @@ Both of them include the entire twitter database.
 
 * First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
 
-    `docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
+    `[user@host ]$ docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
 * There is a problem with Docker and MongoDB. Docker interface does not allow Mongo to keep database data, so before we start using our docker mongo we have to restore information.
 
 * First of all we enter into the docker.
 
-    `docker exec -it mongotwitter /bin/bash`
+    `[user@host ]$ docker exec -it mongotwitter /bin/bash`
 
 * Then we run a script that regenerates all twitter database.
     
@@ -448,7 +465,7 @@ Both of them include the entire twitter database.
 
 * Later we run our queries using mongo. We can run this command inside the docker or if we have MongoDB installed in our machine we can run it outside. 
 
-    `mongo --host 172.17.0.3:27017 twitter`
+    `[user@host ]$ mongo --host 172.17.0.3:27017 twitter`
 
 
 * When we are inside mongo shell we can start running different queries.
