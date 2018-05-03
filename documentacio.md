@@ -31,23 +31,23 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 * Install Postgres package.
 
-`[root@host ]# dnf -y install postgresql-server`
+    `[root@host ]# dnf -y install postgresql-server`
 
 * Init Postgres.
 
-`[root@host ]# postgresql-setup initdb`
+    `[root@host ]# postgresql-setup initdb`
 
 * Start Postgres service.
 
-`[root@host ]# systemctl start postgresql`
+    `[root@host ]# systemctl start postgresql`
 
 * Enable Postgres service.
 
-`[root@host ]# systemctl enable postgresql`
+    `[root@host ]# systemctl enable postgresql`
 
 * Set password to user postgres.
 
-`[root@host ]# passwd postgres`
+    `[root@host ]# passwd postgres`
 
 
 ### MongoDB installation
@@ -60,7 +60,7 @@ First of all we need to add Mongo's repository to our machine.
 
 `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
 
-And we add:
+And we add the following lines:
 > [mongodb]
 
 > name=MongoDB Repository
@@ -78,11 +78,11 @@ Later we install the package:
 
 * Start MongoDB service.
 
-`[root@host ]# systemctl start mongod`
+    `[root@host ]# systemctl start mongod`
 
 * Enable MongoDB service.
 
-`[root@host ]# systemctl enable mongod`
+    `[root@host ]# systemctl enable mongod`
 
 
 Now we have both interfaces installed in our system so in order to have data to process, we should set up a database.
@@ -104,19 +104,19 @@ It is created a script that includes Twitter database, so the only thing we have
 
 * First of all we init session in postgres.
 
-`[root@host ]# su - postgres`
+    `[root@host ]# su - postgres`
 
 * Later we init the database agent.
 
-`-bash-4.3$ psql`
+    `-bash-4.3$ psql`
 
 * Once we have entered to Postgres, we can import the database structure using the script.
 
-`postgres=# \i /tmp/twitterhashtags.sql;`
+    `postgres=# \i /tmp/twitterhashtags.sql;`
 
 * Now we have the complete database structure. We can check it by using:
 
-`twitter=# \d`
+    `twitter=# \d`
 
                         List of relations
                         
@@ -156,12 +156,24 @@ an _id_ field that is bigserial and this serial is a sequence of numbers startin
     that big amount of data is to execute the program and redirect the output to a file.
 
     * First we create information of hashtags table with our script and put it in /tmp directory:
-    `[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
+    
+        `[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
 
     * Then we import data from /tmp to twitter database:
-    `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
+    
+        `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
 
     * That is the process we should follow for each table.
+
+        `twitter=# COPY usuaris FROM '/tmp/usuaris.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY tweets(id_tweet,text_tweet,id_usuari,data_tweet) FROM '/tmp/tweets.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY fotos(id_foto,text_foto,id_tweet,data_foto) FROM '/tmp/fotos.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY likes(id_like,data_like,id_usuari_like,id_tweet) FROM '/tmp/likes.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY seguidors FROM '/tmp/seguidors.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY retweets(id_retweet,data_retweet,text_retweet,id_usuari_retweet,id_tweet) FROM '/tmp/retweets.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY comentaris(id_comentari,data_comentari,text_comentari,id_usuari_comentari,id_tweet) FROM '/tmp/comentaris.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY hashtagstweets FROM '/tmp/hashtagstweets.csv' DELIMITER ',' CSV HEADER;`
+        `twitter=# COPY usuarislikescomentaris FROM '/tmp/usuarislikescomentaris.csv' DELIMITER ',' CSV HEADER;`
 
 
 #### Here you can see the script name and the table associated with
@@ -185,11 +197,11 @@ usuarislikescomentaris | populate_usuarislikescomentaris.py
 
 * First of all we import the function from /tmp.
 
-`twitter=# \i /tmp/funcio_plpgsql.sql;`
+    `twitter=# \i /tmp/funcio_plpgsql.sql;`
 
 * Then we run the function
 
-`twitter=# SELECT update_tweets();`
+    `twitter=# SELECT update_tweets();`
 
 
 ##### Now we have finished creating Twitter database on Postgres. 
@@ -231,35 +243,49 @@ collections for MongoDB called **users** and **tweets**.
 Before we create the database in _json_ format, we must add indexes to Postgres database in order to 
 reduce the number of accesses to each table. Every index is created in a field related to another table.
 
+
 #### TWEETS
+
 `CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
 
 `CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
 
+
 #### COMENTARIS 
+
 `CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
 
 `CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
 
+
 #### LIKES
+
 `CREATE INDEX id_usuari_comentari2_idx ON likes (id_usuari_like);`
 
 `CREATE INDEX id_tweet2_idx ON likes (id_tweet);`
 
+
 #### USUARISLIKESCOMENTARIS
+
 `CREATE INDEX id_usuari2_idx ON usuarislikescomentaris(id_usuari);`
 
 `CREATE INDEX id_comentari3_idx ON usuarislikescomentaris(id_comentari);`
 
+
 #### FOTOS
+
 `CREATE INDEX id_tweet3_idx ON fotos (id_tweet);`
 
+
 #### RETWEETS
+
 `CREATE INDEX id_usuari3_idx ON retweets(id_usuari_retweet);`
 
 `CREATE INDEX id_tweet4_idx ON retweets (id_tweet);`
 
+
 #### HASHTAGSTWEETS
+
 `CREATE INDEX id_tweet5_idx ON hashtagstweets (id_tweet);`
 
 `CREATE INDEX id_hashtag_idx ON hashtagstweets (id_hashtag);`
@@ -274,36 +300,36 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
 
 * Obtain users data and redirect the output to a file, so as to have all users information (user password is **jupiter**). 
 
-`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,
-telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
-(SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) 
-users ORDER BY users.id_usuari;' > /tmp/users.json`
+    `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,
+    telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+    (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) 
+    users ORDER BY users.id_usuari;' > /tmp/users.json`
 
 * Obtain tweets data and redirect the output to a file, in order2 to have all tweets information (user password is **jupiter**). 
 
-`psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
-    (SELECT id_tweet AS "_id",
-    text_tweet,
-    id_usuari,
-    data_tweet,
-    (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM 
-    (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
-    (SELECT row_to_json(row(lat,lon))) AS "geo",
-    (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM 
-    (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
-    ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
-    (SELECT array_to_json(array_agg(row_to_json(likes))) FROM 
-    (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
-    (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM 
-    (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
-    (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" 
-    FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
-    (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
-    (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
-    (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
-    (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM 
-    retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
-FROM tweets) tweets;' > /tmp/tweets.json`
+    `psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(tweets) FROM 
+        (SELECT id_tweet AS "_id",
+        text_tweet,
+        id_usuari,
+        data_tweet,
+        (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM 
+        (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
+        (SELECT row_to_json(row(lat,lon))) AS "geo",
+        (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM 
+        (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
+        ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
+        (SELECT array_to_json(array_agg(row_to_json(likes))) FROM 
+        (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
+        (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM 
+        (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
+        (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" 
+        FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
+        (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
+        (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
+        (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
+        (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM 
+        retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
+    FROM tweets) tweets;' > /tmp/tweets.json`
 
 
 ### Database Twitter on MongoDB
@@ -314,11 +340,11 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 * First we import users.
 
-`mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
+    `mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
 
 * Then we import tweets.
 
-`mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
+    `mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
 
 
 ##### Now we have finished creating Twitter database on MongoDB. 
@@ -329,21 +355,24 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 * First of all we enter to MongoDB interface.
 
-`[root@host ]# mongo`
+    `[root@host ]# mongo`
 
 * Once we have entered to MongoDB, we have to choose the database we want to work with.
 
-`> use twitter`
+    `> use twitter`
 
 * Later we can see the different collections.
-`> show collections`
+    
+    `> show collections`
 
 * To select collections we want to work with we should specify in the find sentence.
 
    Working on users collection:
+       
    `> db.users.find()`
     
    or working on tweets collection: 
+   
    `> db.tweets.find()`
 
 
@@ -376,16 +405,16 @@ Both of them include the entire twitter database.
 
 * First of all we download and run Postgres docker from DockerHub, where I have te image already created. 
 
-`docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
+    `docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
 
 * Later we run our queries using psql (user password is **jupiter**). You should wait a little bit until twitter database is ready (about 1 minute).
 
-`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
-
-`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
-
-`psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
+    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
+    
+    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
+    
+    `psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
 
 
 
@@ -396,29 +425,30 @@ Both of them include the entire twitter database.
 
 * First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
 
-`docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
+    `docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
 * There is a problem with Docker and MongoDB. Docker interface does not allow Mongo to keep database data, so before we start using our docker mongo we have to restore information.
 
 * First of all we enter into the docker.
 
-`docker exec -it mongotwitter /bin/bash`
+    `docker exec -it mongotwitter /bin/bash`
 
 * Then we run a script that regenerates all twitter database.
-`./tmp/restore.sh`
+    
+    `./tmp/restore.sh`
 
 * Later we run our queries using mongo. We can run this command inside the docker or if we have MongoDB installed in our machine we can run it outside. 
 
-`mongo --host 172.17.0.3:27017 twitter`
+    `mongo --host 172.17.0.3:27017 twitter`
+
 
 * When we are inside mongo shell we can start running different queries.
 
-`> db.users.find()`
- 
-`> db.tweets.find({"text_tweet":/#sale/i}).count()`
-
-`> db.tweets.find({"text_tweet":/#/i})`
+    `> db.users.find()`
+     
+    `> db.tweets.find({"text_tweet":/#sale/i}).count()`
+    
+    `> db.tweets.find({"text_tweet":/#/i})`
 
 
 * It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
-
