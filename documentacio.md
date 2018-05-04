@@ -48,6 +48,23 @@ As a superuser we have to run different commands in ordrer to install **Postgres
 * Set password to user postgres.
 
     `[root@host ]# passwd postgres`
+    
+    
+* There is a configuration file placed in /var/lib/pgsql/data/ that is named _pg_hba.conf_ where we can change different parameters of the client authentication
+  (HBA stands for host-based authentication).
+  The general format fo this file is a set of records where each record specifies a connection type, a client IP address range, a database name, a user name, 
+  and the authentication method to be used for connection matching this parameters.
+  There is no "fall_through" or "backup", if one record is chosen and the authentication fails, subsequent records are not considered. If no record matches, access is denied. 
+  
+  
+  
+  https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
+  
+  CANVIAR a POSTGRES usuari de postgres a meu
+  
+
+    
+ 
 
 
 ### MongoDB installation
@@ -476,12 +493,12 @@ Once we have ready our system with both interfaces, we are able to start testing
         JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
             
         ![Postgres query1 Twitter](Postgres/imatges/query1.png)
-            
-            
+
+
         #### MongoDB
-       
+
         `> db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0}).explain("executionStats")`
-            
+
         ![Mongo query1 Twitter](MongoDB/imatges/query1.png)
             
             
@@ -493,7 +510,6 @@ Once we have ready our system with both interfaces, we are able to start testing
         Each tree’s branches represent sub-actions, and you’d work inside-out to determine what’s happening first.
         
         We can see that is using _id_usuari_ to join both tables. 
-        
         
         The final execution time is 3169.234 ms.
         
@@ -515,34 +531,34 @@ Once we have ready our system with both interfaces, we are able to start testing
         The difference between the number of matching documents and the number documents scanned may suggest that, to improve efficiency, 
         the query might benefit from the use of an index.
           
-          
-          
+
     * How can we solve this? Just adding Indexs on both interfaces and seeing if they improve their performance.
     
         #### Postgres
         
         * As we did before, we need to add indexes to every single field that is related to another table. 
           Here it is shown the different tables and the fields that are joined to other tables.
+          
         
-        Field                   |   Table                  |   Relation           
-        ------------------------|--------------------------|-------------
-        id_usuari               |  Tweets                  |  Table usuaris 
-        foto                    |  Tweets                  |  Table fotos 
-        id_usuari_comentari     |  Comentaris              |  Table usuaris 
-        id_tweet                |  Comentaris              |  Table tweets 
-        id_usuari_like          |  Likes                   |  Table usuaris
-        id_tweet                |  Likes                   |  Table tweets
-        id_usuari               |  Usuarislikescomentaris  |  Table usuaris 
-        id_comentari            |  Usuarislikescomentaris  |  Table comentaris 
-        id_tweet                |  Fotos                   |  Table tweets
-        id_usuari_retweet       |  Retweets                |  Table usuaris 
-        id_tweet                |  Retweets                |  Table tweets
-        id_tweet                |  Hashtagstweets          |  Table tweets
-        id_hashtag              |  Hashtagstweets          |  Table hashtags
-        id_usuari_seguit        |  Seguidors               |  Table usuaris 
-        id_usuari_seguidor      |  Seguidors               |  Table usuaris 
+          Table                  |Field                   |  Relation           
+        -------------------------|------------------------|------------
+         Tweets                  | id_usuari              | Table usuaris 
+         Tweets                  | foto                   | Table fotos 
+         Comentaris              | id_usuari_comentari    | Table usuaris 
+         Comentaris              | id_tweet               | Table tweets 
+         Likes                   | id_usuari_like         | Table usuaris
+         Likes                   | id_tweet               | Table tweets
+         Usuarislikescomentaris  | id_usuari              | Table usuaris 
+         Usuarislikescomentaris  | id_comentari           | Table comentaris 
+         Fotos                   | id_tweet               | Table tweets
+         Retweets                | id_usuari_retweet      | Table usuaris 
+         Retweets                | id_tweet               | Table tweets
+         Hashtagstweets          | id_tweet               | Table tweets
+         Hashtagstweets          | id_hashtag             | Table hashtags
+         Seguidors               | id_usuari_seguit       | Table usuaris 
+         Seguidors               | id_usuari_seguidor     | Table usuaris 
         
-        
+
         * Now we create the indexs.
         
             #### TWEETS
@@ -551,13 +567,11 @@ Once we have ready our system with both interfaces, we are able to start testing
             
             `twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
             
-            
             #### COMENTARIS 
             
             `twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
             
             `twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
-            
             
             #### LIKES
             
@@ -565,25 +579,21 @@ Once we have ready our system with both interfaces, we are able to start testing
             
             `twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
             
-            
             #### USUARISLIKESCOMENTARIS
             
             `twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
             
             `twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
             
-            
             #### FOTOS
             
             `twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
-            
             
             #### RETWEETS
             
             `twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
             
             `twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
-            
             
             #### HASHTAGSTWEETS
             
@@ -599,15 +609,52 @@ Once we have ready our system with both interfaces, we are able to start testing
         
         
         #### MongoDB
+        
+            Now we add the Index in MongoDB. The syntax and their creation differs from Postgres, but it has the same effect. 
+            That index can search in MongoDB as it was Google Search.
+            To do it we should follow this step:
 
+           `> db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})`
+           
+           
+    * Once we have created the indexes on both interfaces we can repeat the previous process to see what has changed.
+    
+        #### Postgres
+        
+        We repeat the query to see the execution process.
+        
+        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
+        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+         
+        ![Postgres query2 Twitter](Postgres/imatges/query2.png)
+        
+        
+        
+        
+        
+        
+        
+        
+        The final execution time is 3065.055 ms.
+        
+        
+        #### MongoDB
+        
+        Having created the index as if it was Google Search, we should use another way to search the previous query.
 
+        `db.tweets.find({$text:{$search:"/#chip/"}},{"text_tweet":1,"_id":0}).explain("executionStats")`
+        
+        ![Mongo query2 Twitter](MongoDB/imatges/query2.png)
+        
+        This time we see that the result has changed. We must focus on four different parts:
+        
+        * _cursor_ this time displays _TextCursor_ to indicate index used and its name. 
+        
+        * _n_ displays the number of matches made with the query.
+        
+        * _nscanned_ displays 296 to indicate that MongoDB scanned 296 index entries. So we have reduced the number of objects scanned from 6 million to 296.
 
-  
-
-
-
-
-
+        * _nscannedObjects_ displays 296 to indicate that MongoDB scanned 296 documents. Again we reduced the number of objects scanned from 6 million to 296.
 
 
 
@@ -619,7 +666,7 @@ Both of them include the entire twitter database.
 
 ### Postgres docker
 
-* First of all we download and run Postgres docker from DockerHub, where I have te image already created. 
+* First of all we download and run Postgres docker from DockerHub, where I have the image already created. 
 
     `[user@host ]$ docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
@@ -639,7 +686,7 @@ Both of them include the entire twitter database.
 
 ### MongoDB docker
 
-* First of all we download and run MongoDB docker from DockerHub, where I also have te image already created. 
+* First of all we download and run MongoDB docker from DockerHub, where I also have the image already created. 
 
     `[user@host ]$ docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
