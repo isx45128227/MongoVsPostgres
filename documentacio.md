@@ -22,12 +22,12 @@ The main details of my Fedora machine:
 
 First of all, before we start analyzing Postgres and MongoDB we should prepare the environment where we are going to use both interfaces.
 
-To do it we should first install *Postgres* and *MongoDB* in our system.
+To do it we should first install **Postgres** and **MongoDB** in our system.
 
 
 ### Postgres installation
 
-As a superuser we have to run different commands in ordrer to install Postgres in our system:
+As a superuser we have to run different commands in ordrer to install **Postgres** in our system:
 
 * Install Postgres package.
 
@@ -52,7 +52,7 @@ As a superuser we have to run different commands in ordrer to install Postgres i
 
 ### MongoDB installation
 
-As a superuser we have to run different commands in ordrer to install MongoDB in our system:
+As a superuser we have to run different commands in ordrer to install **MongoDB** in our system:
 
 * Install MongoDB package.
 
@@ -90,13 +90,13 @@ Now we have both interfaces installed in our system so in order to have data to 
 In this project we are going to work with **Twitter** database.
 We have to create two different structures, one used in Postgres and the other one used in MongoDB.
  
-The structure I have chosen for Postgres is:
+The structure I have chosen for **Postgres** is:
 
 ![Postgres Twitter Structure](Postgres/imatges/twitter.png)
 
 
-The structure for MongoDB differs from Postgres because of the organization. MongoDB use collections instead of tables, 
-there is no need to create one collection for each table used in Postgres so I've tried to maintain the same tables and relations somehow.
+The structure for **MongoDB** differs from Postgres because of the organization. MongoDB use collections instead of tables, 
+there is no need to create one collection for each table used in Postgres so I've tried to maintain the same relations somehow.
 
 * Users 
 
@@ -361,7 +361,8 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
     FROM tweets) tweets;' > /tmp/tweets.json`
 
 
-Function row_to_json converts one row into _json_ document. That means that we can transform every row of our table in Postgres into different documents in _json_ format. 
+Function row_to_json converts one row into _json_ document. 
+That means that we can transform every row of our table in Postgres into different documents in _json_ format. 
 
 Function array_agg creates an array. In this case we use this function to create different arrays of objects.
 
@@ -369,7 +370,8 @@ Function array_agg creates an array. In this case we use this function to create
 
 ### Database Twitter on MongoDB
 
-Finally, we have to add Twitter database to MongoDB. In this case is not necessary to run the interface. We can directly import database from _json_ or _csv_ file.
+Finally, we have to add Twitter database to MongoDB. In this case is not necessary to run the interface. 
+We can directly import database from _json_ or _csv_ file.
 
 In this case we have **two** json files, the first one includes **tweets collection** and the second one includes **users collection**.
 
@@ -410,14 +412,13 @@ In this case we have **two** json files, the first one includes **tweets collect
    
    `> db.tweets.find()`
 
-
 ---
 
 ### Query Documents
 
 As I said at the very beginning of this project syntax in MongoDB differs from Postgres.
 
-Here you can see basic queries in Postgres and their translation into Mongo's syntax.
+Here you can see basic queries in Postgres and their translation into MongoDB's syntax.
 
 
 PostgreSQL                                                                                                        | MongoDB
@@ -430,16 +431,15 @@ PostgreSQL                                                                      
 ---
 
 
-## Testing query speed
+## Testing query performance
 
-Once we have ready our system with both interfaces, we are able to start testing different queries to compare speed rates.
+Once we have ready our system with both interfaces, we are able to start testing different queries to compare speed rates and the number of accesses.
 
 
-* First of all we are going to test both databases without indexes, which increase their performance.
+* First of all we are going to test both databases without indexes.
 
-### Postgres
 
-* To begin with we should remove indexes we have created before.
+* To begin with we should remove indexes we have created before on Postgres.
 
     There is a script we can use to DROP all indexes. It is placed in Postgres/delete_indexs.sql.
     We enter to Twitter database and import the script.
@@ -447,33 +447,162 @@ Once we have ready our system with both interfaces, we are able to start testing
     `twitter=# \i /tmp/delete_indexs.sql` 
 
 
-* Now we are ready to execute different queries.
+* Now we are ready to execute different queries on both interfaces and see the result.
 
     * First we are going to find tweets that contains the hashtag #chip.
+    
+        #### Postgres
 
-        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
+        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        
+        Result (only the first one): `Tweet 4947 de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres. 
+        que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres. #chip #variation`
+        
+        
+        #### MongoDB
+        
+        `> db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0})`
+        
+        Result (only the first one): `"text_tweet" : "Tweet 4947 de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo 
+        amb Postgres. que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres. #chip #variation" `
+        
         
     * We can obtain the cost by doing:
-    
-        `twitter=# EXPLAIN SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
         
+        #### Postgres
+        
+        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
+        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+            
         ![Postgres query1 Twitter](Postgres/imatges/query1.png)
-    
-    
-
-
-
-### MongoDB
-
-* First we are going to find tweets that contains the hashtag #chip.
-
-    `> db.tweets.find({ text_tweet:"#chip" })`
+            
+            
+        #### MongoDB
+       
+        `> db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0}).explain("executionStats")`
+            
+        ![Mongo query1 Twitter](MongoDB/imatges/query1.png)
+            
+            
+    * Now we are ready to analyze what it happened.
+       
+        #### Postgres
         
-* We can obtain the cost by doing:
-    
-    `> db.tweets.find({ text_tweet:"#chip" }).explain("executionStats")`
+        As we see on the result, Postgres builds a tree structure representing the different actions taken, with the root and each -> pointing to one of them. 
+        Each tree’s branches represent sub-actions, and you’d work inside-out to determine what’s happening first.
         
-    ![Mongo query1 Twitter](MongoDB/imatges/query1.png)
+        We can see that is using _id_usuari_ to join both tables. 
+        
+        
+        The final execution time is 3169.234 ms.
+        
+        
+        #### MongoDB
+    
+        On the other hand, MongoDB represents the execution plan into a _json_ document. We can focus on three different parts of the result:
+        
+        * The most important is the _cursor_. When _BasicCursor_ is displayed, it means that a collection scan has been made, 
+          so mongo had to scan the entire collection document by document to identify the results. 
+          This is generally an expensive operation and can result in slow queries.
+        
+        * _n_ displays the matches made with the query.
+        
+        
+        * Now we focus on _nscanned_ and _nscannedObjects_, that is 6000000, this is the number of documents scanned to match the _n_ results.
+          That happens when we don't use Indexs to reduce the number of accesses.
+        
+        The difference between the number of matching documents and the number documents scanned may suggest that, to improve efficiency, 
+        the query might benefit from the use of an index.
+          
+          
+          
+    * How can we solve this? Just adding Indexs on both interfaces and seeing if they improve their performance.
+    
+        #### Postgres
+        
+        * As we did before, we need to add indexes to every single field that is related to another table. 
+          Here it is shown the different tables and the fields that are joined to other tables.
+        
+        Field                   |   Table                  |   Relation           
+        ------------------------|--------------------------|-------------
+        id_usuari               |  Tweets                  |  Table usuaris 
+        foto                    |  Tweets                  |  Table fotos 
+        id_usuari_comentari     |  Comentaris              |  Table usuaris 
+        id_tweet                |  Comentaris              |  Table tweets 
+        id_usuari_like          |  Likes                   |  Table usuaris
+        id_tweet                |  Likes                   |  Table tweets
+        id_usuari               |  Usuarislikescomentaris  |  Table usuaris 
+        id_comentari            |  Usuarislikescomentaris  |  Table comentaris 
+        id_tweet                |  Fotos                   |  Table tweets
+        id_usuari_retweet       |  Retweets                |  Table usuaris 
+        id_tweet                |  Retweets                |  Table tweets
+        id_tweet                |  Hashtagstweets          |  Table tweets
+        id_hashtag              |  Hashtagstweets          |  Table hashtags
+        id_usuari_seguit        |  Seguidors               |  Table usuaris 
+        id_usuari_seguidor      |  Seguidors               |  Table usuaris 
+        
+        
+        * Now we create the indexs.
+        
+            #### TWEETS
+
+            `twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+            
+            `twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+            
+            
+            #### COMENTARIS 
+            
+            `twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+            
+            `twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+            
+            
+            #### LIKES
+            
+            `twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
+            
+            `twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
+            
+            
+            #### USUARISLIKESCOMENTARIS
+            
+            `twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
+            
+            `twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
+            
+            
+            #### FOTOS
+            
+            `twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
+            
+            
+            #### RETWEETS
+            
+            `twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
+            
+            `twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
+            
+            
+            #### HASHTAGSTWEETS
+            
+            `twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
+            
+            `twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
+            
+            #### SEGUIDORS
+            
+            `twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
+            
+            `twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+        
+        
+        #### MongoDB
+
+
+
+  
 
 
 
