@@ -1,6 +1,7 @@
 # Project documentation
 
-The aim of this project is to let you know the great potential of NoSQL databases when we have to process big data volumes.
+The aim of this project is to let you know the great potential of NoSQL 
+databases when we have to process big data volumes.
 
 Syntax used in MongoDB differs from Postgres, but it's really simple to understand. 
 In this project you will see how to use syntax in MongoDB and Postgres.
@@ -20,14 +21,16 @@ The main details of my Fedora machine:
 
 ## Environment preparation
 
-First of all, before we start analyzing Postgres and MongoDB we should prepare the environment where we are going to use both interfaces.
+First of all, before we start analyzing Postgres and MongoDB we should prepare 
+the environment where we are going to use both interfaces.
 
 To do it we should first install **Postgres** and **MongoDB** in our system.
 
 
 ### Postgres installation
 
-As a superuser we have to run different commands in ordrer to install **Postgres** in our system:
+As a superuser we have to run different commands in ordrer to install 
+**Postgres** in our system:
 
 * Install Postgres package.
 
@@ -37,39 +40,93 @@ As a superuser we have to run different commands in ordrer to install **Postgres
 
     `[root@host ]# postgresql-setup initdb`
 
-* Start Postgres service.
+* Start service.
 
     `[root@host ]# systemctl start postgresql`
 
-* Enable Postgres service.
+* Enable service.
 
     `[root@host ]# systemctl enable postgresql`
 
-* Set password to user postgres.
+* Set password to user postgres (we could use **jupiter** for example).
 
     `[root@host ]# passwd postgres`
     
     
-* There is a configuration file placed in /var/lib/pgsql/data/ that is named _pg_hba.conf_ where we can change different parameters of the client authentication
-  (HBA stands for host-based authentication).
-  The general format fo this file is a set of records where each record specifies a connection type, a client IP address range, a database name, a user name, 
-  and the authentication method to be used for connection matching this parameters.
-  There is no "fall_through" or "backup", if one record is chosen and the authentication fails, subsequent records are not considered. If no record matches, access is denied. 
+* There is a configuration file placed in /var/lib/pgsql/data/ that is 
+  named _pg_hba.conf_ where we can change different parameters of the client 
+  authentication (HBA stands for host-based authentication).
+  The general format for this file is a set of records where each record 
+  specifies a connection type, a client IP address range, a database name, 
+  a user name, and the authentication method to be used for connection 
+  matching this parameters.
+  If one record is chosen and the authentication fails, subsequent records 
+  are not considered. 
+  If no record matches, access is denied. 
+  
+  Before explaining the divergences between the options we use, we should 
+  differenciate 4 different **types** of connection:
+  
+      * Local: This option matches connection attempts using Unix-domain sockets. 
+      * Host: This option matches connection attempts using TCP/IP, the most commonly used.
+      * Hostssl: This option matches connection attempts made using TCP/IP 
+                 but only when the connection is made with SSL encryption.
+      * Hostnossl: This option has the opposite behaviour of hostssl. 
+  
+  Here we will see the most commonly used options and their meaning. 
+  
+  
+  Option       |    Usage
+  -------------|-------------------------------------------------------------------------------------------------------
+  Database     | Specifies the db name. Value all specifies that it matches all databases.
+  User         | Specifies which database user name this record matches. Value all specifies that it matches all users.
+  Address      | Specifies the client machine address(es) that this record matches.
+  Auth-method  | Specifies the authentication method to use when a connection matches this record.
+  Auth-options | There can be field(s) of the form name=value that specify options for the authentication method. 
+  
+  
+  For the **auth-method** there are possible choices to consider:
+  
+      Choice    |   Definition
+      ----------|-------------------------------------
+      trust     | Allow the connection unconditionally.
+      reject    | Reject the connection unconditionally.
+      md5       | Require the client to supply an encrypted password for authentication. Is sent encrypted.
+      password  | Require the client to supply an unencrypted password for authentication. Is sent in clear text.
+      gss       | Use GSSAPI to authenticate the user. 
+      sspi      | Use SSPI to authenticate the user. 
+      krb5      | Use Kerberos V5 to authenticate the user.
+      ident     | Obtain the operating system user name of the client by contacting the ident server on the client and check if it matches the requested database user name. When specified for local connections, peer authentication will be used instead.
+      peer      | Obtain the client's operating system user name from the operating system and check if it matches the requested database user name.
+      ldap      | Authenticate using an LDAP server.
+      radius    | Authenticate using a RADIUS server.
+      cert      | Authenticate using SSL client certificates. 
+      pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
+  
+  
+      There are lots of possible configurations, but here you will see simple examples
+      
+      * Allow local users to enter without authentication
+          
+            `local   all             all                                     trust`
+      
+      * Allow any user from any host with IP address 192.168.93.x to connect
+        to database "postgres" as the same user name that ident reports for
+        the connection.
+        
+            `host    postgres        all             192.168.93.0/24         ident`
+      
+      * Allow any user from hosts in the example.com domain to connect to
+        any database if the user's password is correctly supplied.
+        
+            `host    all             all             .example.com            md5`
   
   
   
-  https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
-  
-  CANVIAR a POSTGRES usuari de postgres a meu
-  
-
-    
- 
-
-
 ### MongoDB installation
 
-As a superuser we have to run different commands in ordrer to install **MongoDB** in our system:
+As a superuser we have to run different commands in ordrer to install 
+**MongoDB** in our system:
 
 * Install MongoDB package.
 
@@ -100,20 +157,45 @@ Later we install the package:
 * Enable MongoDB service.
 
     `[root@host ]# systemctl enable mongod`
+    
+    
+There is a possibility of creating a configuration file for mongod instance at startup.
+That file contains settings that are equivalent to mongod command-line options. 
+Using it, makes managing options easier. 
+
+The general format for this file is in YAML format. You can change different 
+options such as systemLog, processManagement, net, setParameter, security, 
+operationProfiling, storage, replication and auditLog options.
+
+For this project we use the default configuration file. 
+But if you are interested in knowing the different options to use,
+you can visit the official website 
+(https://docs.mongodb.com/v2.6/reference/configuration-options/). 
 
 
-Now we have both interfaces installed in our system so in order to have data to process, we should set up a database.
+
+#### Now we have both interfaces installed in our system so in order to 
+have data to process, we should create a database.
+
+
+### Starting up the database
 
 In this project we are going to work with **Twitter** database.
-We have to create two different structures, one used in Postgres and the other one used in MongoDB.
+We have to create two different structures, one used in Postgres and the 
+other one used in MongoDB.
  
 The structure I have chosen for **Postgres** is:
 
 ![Postgres Twitter Structure](Postgres/imatges/twitter.png)
 
 
-The structure for **MongoDB** differs from Postgres because of the organization. MongoDB use collections instead of tables, 
-there is no need to create one collection for each table used in Postgres so I've tried to maintain the same relations somehow.
+This structure contains different tables and they are connected by using 
+foreign keys (the _id_ of each table) in order to maintain the data coherence. 
+
+
+The structure for **MongoDB** differs from Postgres because of the organization. 
+MongoDB use collections instead of tables, there is no need to create one 
+collection for each table used in Postgres so I've tried to maintain the same relations somehow.
 
 * Users 
 
@@ -131,7 +213,8 @@ Once we have defined the structure we are going to use, we can start creating th
 
 ### Database Twitter on Postgres
 
-It is created a script that includes Twitter database, so the only thing we have to do is to import that script.
+It is created a script that includes Twitter database, so the only thing
+we have to do is to import that script.
 
 
 * First of all we init session in postgres.
@@ -153,31 +236,33 @@ It is created a script that includes Twitter database, so the only thing we have
                         List of relations
                         
 Schema |                 Name                  |   Type   |  Owner
--------|---------------------------------------|----------|---------
-public | comentaris                            | table    | postgres
-public | comentaris_id_comentari_seq           | sequence | postgres
-public | fotos                                 | table    | postgres
-public | fotos_id_foto_seq                     | sequence | postgres
-public | hashtags                              | table    | postgres
-public | hashtags_id_hashtag_seq               | sequence | postgres
-public | hashtagstweets                        | table    | postgres
-public | hashtagstweets_id_hashtagtweet_seq    | sequence | postgres
-public | likes                                 | table    | postgres
-public | likes_id_like_seq                     | sequence | postgres
-public | retweets                              | table    | postgres
-public | retweets_id_retweet_seq               | sequence | postgres
-public | seguidors                             | table    | postgres
-public | seguidors_id_seq                      | sequence | postgres
-public | tweets                                | table    | postgres
-public | tweets_id_tweet_seq                   | sequence | postgres
-public | usuaris                               | table    | postgres
-public | usuaris_id_usuari_seq                 | sequence | postgres
-public | usuarislikescomentaris                | table    | postgres
-public | usuarislikescomentaris_id_likecom_seq | sequence | postgres
+-------|---------------------------------------|----------|-------------
+public | comentaris                            | table    | twitteradmin
+public | comentaris_id_comentari_seq           | sequence | twitteradmin
+public | fotos                                 | table    | twitteradmin
+public | fotos_id_foto_seq                     | sequence | twitteradmin
+public | hashtags                              | table    | twitteradmin
+public | hashtags_id_hashtag_seq               | sequence | twitteradmin
+public | hashtagstweets                        | table    | twitteradmin
+public | hashtagstweets_id_hashtagtweet_seq    | sequence | twitteradmin
+public | likes                                 | table    | twitteradmin
+public | likes_id_like_seq                     | sequence | twitteradmin
+public | retweets                              | table    | twitteradmin
+public | retweets_id_retweet_seq               | sequence | twitteradmin
+public | seguidors                             | table    | twitteradmin
+public | seguidors_id_seq                      | sequence | twitteradmin
+public | tweets                                | table    | twitteradmin
+public | tweets_id_tweet_seq                   | sequence | twitteradmin
+public | usuaris                               | table    | twitteradmin
+public | usuaris_id_usuari_seq                 | sequence | twitteradmin
+public | usuarislikescomentaris                | table    | twitteradmin
+public | usuarislikescomentaris_id_likecom_seq | sequence | twitteradmin
 
 
-Here we see that for each table it is created a sequence, that means that each single table has 
-an _id_ field that is bigserial and this serial is a sequence of numbers starting at 1.
+
+Here we see that for each table it is created a sequence, that means that 
+each single table has an _id_ field that is bigserial and this serial is
+a sequence of numbers starting at 1.
 
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
@@ -233,7 +318,13 @@ usuaris                | populate_usuaris.py
 usuarislikescomentaris | populate_usuarislikescomentaris.py    
 
 
-##### In order to add the hashtag to the tweet, I have created a function in PLPGSQL that adds the hashtag to each tweet.
+There is also other tools that can populate data into Postgres database. 
+The most commonly used is pg_loader that works with lots of data, but in 
+this case we use an easier method.
+
+
+##### In order to add the hashtag to the tweet, 
+I have created a function in PLPGSQL that adds the hashtag to each tweet.
 ##### Once we have added all information to twitter database we should run this function. 
 
 * First of all we import the function from /tmp.
@@ -255,9 +346,11 @@ Once we have created our Postgres database we can export all data into _json_ fo
 Postgres has different functions that can convert from Postgres to _json_ files.
 The only thing we have to do is to execute the function and see the result.
 
-`twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,telefon,data_alta,
-descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
-(SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;`
+`twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
+           password,username,telefon,data_alta,descripcio,ciutat,url,idioma,
+           email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+           (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE 
+           id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;`
 
 
 Result: `{"id_usuari":12592,
@@ -281,9 +374,12 @@ That's fine if we only want to see the output, but we need it to create our full
 MongoDB's organization is different from Postgres, so we are going to create **two** different 
 collections for MongoDB called **users** and **tweets**. 
 
-As I have tested, two days after executing the function the results haven't appeared (we must take into account that there are more than 3 million rows). 
-To solve this I added indexes to Postgres database in order to reduce the number of accesses to each table and to obtain the result faster 
-(if we don't use indexes it will cost a lot of time to generate _json_ files).
+As I have tested, two days after executing the function the results haven't 
+appeared (we must take into account that there are more than 3 million rows).
+ 
+To solve this I added indexes to Postgres database in order to reduce the number 
+of accesses to each table and to obtain the result faster (if we don't use indexes 
+it will cost a lot of time to generate _json_ files).
 
 Every index is created in a field that is linked to another table.
 
@@ -341,14 +437,21 @@ Every index is created in a field that is linked to another table.
 `twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
 
 
-After adding the indexes we are ready to create _json_ files. We just need to follow the next steps:
+After adding the indexes we are ready to create _json_ files. 
+We just need to follow the next steps:
 
-* Obtain users data and redirect the output to a file, so as to have all users information (user password is **jupiter**). 
+* Obtain users data and redirect the output to a file,
+  so as to have all users information (user password is **jupiter**). 
 
-    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 'SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,password,username,
-    telefon,data_alta,descripcio,ciutat,url,idioma,email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
-    (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) 
-    users ORDER BY users.id_usuari;' > /tmp/users.json`
+    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+    'SELECT row_to_json(users) FROM 
+    (SELECT id_usuari,nom,cognoms,password,username,
+       telefon,data_alta,descripcio,ciutat,url,idioma,email,
+    (SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+      (SELECT data_seguidor,id_usuari_seguidor 
+       FROM seguidors WHERE id_usuari=id_usuari_seguit) 
+      followers) as seguidors FROM usuaris) users 
+    ORDER BY users.id_usuari;' > /tmp/users.json`
 
 * Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
@@ -379,18 +482,22 @@ After adding the indexes we are ready to create _json_ files. We just need to fo
 
 
 Function row_to_json converts one row into _json_ document. 
-That means that we can transform every row of our table in Postgres into different documents in _json_ format. 
+That means that we can transform every row of our table in Postgres into 
+different documents in _json_ format. 
 
-Function array_agg creates an array. In this case we use this function to create different arrays of objects.
+Function array_agg creates an array. In this case we use this function to 
+create different arrays of objects.
 
 
 
 ### Database Twitter on MongoDB
 
-Finally, we have to add Twitter database to MongoDB. In this case is not necessary to run the interface. 
+Finally, we have to add Twitter database to MongoDB. 
+In this case is not necessary to run the interface. 
 We can directly import database from _json_ or _csv_ file.
 
-In this case we have **two** json files, the first one includes **tweets collection** and the second one includes **users collection**.
+In this case we have **two** json files, the first one includes 
+**tweets collection** and the second one includes **users collection**.
 
 * First we import users.
 
@@ -405,7 +512,7 @@ In this case we have **two** json files, the first one includes **tweets collect
 
 ---
 
-##### Once we have added all information to Twitter database we can start using the database. 
+##### Once we have added all information to Twitter database we can start using it. 
 
 * First of all we enter to MongoDB interface.
 
@@ -450,7 +557,8 @@ PostgreSQL                                                                      
 
 ## Testing query performance
 
-Once we have ready our system with both interfaces, we are able to start testing different queries to compare speed rates and the number of accesses.
+Once we have ready our system with both interfaces, we are able to start 
+testing different queries to compare speed rates and the number of accesses.
 
 
 * First of all we are going to test both databases without indexes.
@@ -466,31 +574,39 @@ Once we have ready our system with both interfaces, we are able to start testing
 
 * Now we are ready to execute different queries on both interfaces and see the result.
 
-    * First we are going to find tweets that contains the hashtag #chip.
+    * First we are going to find tweets that contains the hashtag _#chip_.
     
         #### Postgres
 
-        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
-        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
+        tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON 
+        tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
+        LIKE '%#chip%' ORDER BY usuaris.telefon;`
         
-        Result (only the first one): `Tweet 4947 de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres. 
-        que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres. #chip #variation`
+        Result (only the first one): `Tweet 4947 de prova d'un usuari que
+        ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres. 
+        que la seva ocupacio ha de ser com a maxim 280 caracters per 
+        comparar Mongo amb Postgres. #chip #variation`
         
         
         #### MongoDB
         
         `> db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0})`
         
-        Result (only the first one): `"text_tweet" : "Tweet 4947 de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo 
-        amb Postgres. que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres. #chip #variation" `
+        Result (only the first one): `"text_tweet" : "Tweet 4947 de prova
+        d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo 
+        amb Postgres. que la seva ocupacio ha de ser com a maxim 280 caracters 
+        per comparar Mongo amb Postgres. #chip #variation"`
         
         
     * We can obtain the cost by doing:
         
         #### Postgres
         
-        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
-        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
+        JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets
+        ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
+        LIKE '%#chip%' ORDER BY usuaris.telefon;`
             
         ![Postgres query1 Twitter](Postgres/imatges/query1.png)
 
@@ -506,37 +622,44 @@ Once we have ready our system with both interfaces, we are able to start testing
        
         #### Postgres
         
-        As we see on the result, Postgres builds a tree structure representing the different actions taken, with the root and each -> pointing to one of them. 
+        As we see on the result, Postgres builds a tree structure representing 
+        the different actions taken, with the root and each -> pointing to one of them. 
         Each tree’s branches represent sub-actions, and you’d work inside-out to determine what’s happening first.
         
         We can see that is using _id_usuari_ to join both tables. 
         
-        The final execution time is 3169.234 ms.
+
         
         
         #### MongoDB
     
-        On the other hand, MongoDB represents the execution plan into a _json_ document. We can focus on three different parts of the result:
+        On the other hand, MongoDB represents the execution plan into 
+        a _json_ document. We can focus on three different parts of the result:
         
-        * The most important is the _cursor_. When _BasicCursor_ is displayed, it means that a collection scan has been made, 
+        * The most important is the _cursor_. When _BasicCursor_ is displayed, 
+          it means that a collection scan has been made, 
           so mongo had to scan the entire collection document by document to identify the results. 
           This is generally an expensive operation and can result in slow queries.
         
         * _n_ displays the matches made with the query.
         
         
-        * Now we focus on _nscanned_ and _nscannedObjects_, that is 6000000, this is the number of documents scanned to match the _n_ results.
+        * Now we focus on _nscanned_ and _nscannedObjects_, that is 6000000, 
+          this is the number of documents scanned to match the _n_ results.
           That happens when we don't use Indexs to reduce the number of accesses.
         
-        The difference between the number of matching documents and the number documents scanned may suggest that, to improve efficiency, 
+        The difference between the number of matching documents and the 
+        number documents scanned may suggest that, to improve efficiency, 
         the query might benefit from the use of an index.
           
 
-    * How can we solve this? Just adding Indexs on both interfaces and seeing if they improve their performance.
+    * How can we solve this? Just adding Indexs on both interfaces and 
+      seeing if they improve their performance.
     
         #### Postgres
         
-        * As we did before, we need to add indexes to every single field that is related to another table. 
+        * As we did before, we need to add indexes to every single field 
+          that is related to another table. 
           Here it is shown the different tables and the fields that are joined to other tables.
           
         
@@ -610,21 +733,26 @@ Once we have ready our system with both interfaces, we are able to start testing
         
         #### MongoDB
         
-            Now we add the Index in MongoDB. The syntax and their creation differs from Postgres, but it has the same effect. 
+            Now we add the Index in MongoDB. The syntax and their creation
+            differs from Postgres, but it has the same effect. 
+            
             That index can search in MongoDB as it was Google Search.
             To do it we should follow this step:
 
            `> db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})`
            
            
-    * Once we have created the indexes on both interfaces we can repeat the previous process to see what has changed.
+    * Once we have created the indexes on both interfaces we can repeat 
+      the previous process to see what has changed.
     
         #### Postgres
         
         We repeat the query to see the execution process.
         
-        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
-        JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
+        JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets 
+        ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
+        LIKE '%#chip%' ORDER BY usuaris.telefon;`
          
         ![Postgres query2 Twitter](Postgres/imatges/query2.png)
         
@@ -632,11 +760,8 @@ Once we have ready our system with both interfaces, we are able to start testing
         
         
         
-        
-        
-        
-        The final execution time is 3065.055 ms.
-        
+
+       
         
         #### MongoDB
         
@@ -652,9 +777,11 @@ Once we have ready our system with both interfaces, we are able to start testing
         
         * _n_ displays the number of matches made with the query.
         
-        * _nscanned_ displays 296 to indicate that MongoDB scanned 296 index entries. So we have reduced the number of objects scanned from 6 million to 296.
+        * _nscanned_ displays 296 to indicate that MongoDB scanned 296 index entries. 
+          So we have reduced the number of objects scanned from 6 million to 296.
 
-        * _nscannedObjects_ displays 296 to indicate that MongoDB scanned 296 documents. Again we reduced the number of objects scanned from 6 million to 296.
+        * _nscannedObjects_ displays 296 to indicate that MongoDB scanned 296 documents. 
+          Again we reduced the number of objects scanned from 6 million to 296.
 
 
 
@@ -666,12 +793,14 @@ Both of them include the entire twitter database.
 
 ### Postgres docker
 
-* First of all we download and run Postgres docker from DockerHub, where I have the image already created. 
+* First of all we download and run Postgres docker from DockerHub, 
+  where I have the image already created. 
 
     `[user@host ]$ docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
 
-* Later we run our queries using psql (user password is **jupiter**). You should wait a little bit until twitter database is ready (about 1 minute).
+* Later we run our queries using psql (user password is **jupiter**). 
+  You should wait a little bit until twitter database is ready (about 1 minute).
 
     `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
     
@@ -681,7 +810,8 @@ Both of them include the entire twitter database.
 
 
 
-* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+* It is also created a Dockerfile with the specifications, but the main problem is 
+  that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
 
 
 ### MongoDB docker
@@ -690,7 +820,9 @@ Both of them include the entire twitter database.
 
     `[user@host ]$ docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
-* There is a problem with Docker and MongoDB. Docker interface does not allow Mongo to keep database data, so before we start using our docker mongo we have to restore information.
+* There is a problem with Docker and MongoDB. Docker interface does not 
+  allow Mongo to keep database data, so before we start using our 
+  docker mongo we have to restore information.
 
 * First of all we enter into the docker.
 
@@ -700,7 +832,8 @@ Both of them include the entire twitter database.
     
     `./tmp/restore.sh`
 
-* Later we run our queries using mongo. We can run this command inside the docker or if we have MongoDB installed in our machine we can run it outside. 
+* Later we run our queries using mongo. We can run this command inside 
+  the docker or if we have MongoDB installed in our machine we can run it outside. 
 
     `[user@host ]$ mongo --host 172.17.0.3:27017 twitter`
 
@@ -714,4 +847,5 @@ Both of them include the entire twitter database.
     `> db.tweets.find({"text_tweet":/#/i})`
 
 
-* It is also created a Dockerfile with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
+* It is also created a Dockerfile with the specifications, but the main 
+  problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
