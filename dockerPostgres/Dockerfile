@@ -11,6 +11,7 @@ ENV POSTGRES_PASSWORD jupiter
 ENV POSTGRES_DB twitter
 EXPOSE 5432
 ADD dumptwitter.sql /docker-entrypoint-initdb.d/
+ADD pg_hba.conf /var/lib/postgresql/data/
 
 # Create image --> docker build -t "postgrestwitter" -f Dockerfile .
 # Init docker  --> docker run --name postgrestwitter -h postgrestwitter -d postgrestwitter
