@@ -186,3 +186,21 @@ FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
 ALTER TABLE fotos 
 ADD CONSTRAINT fk_tweet
 FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
+
+
+-- ROL different de postgres
+
+CREATE ROLE twitteradmin;
+
+ALTER DATABASE twitter OWNER TO twitteradmin;
+ALTER TABLE comentaris OWNER TO twitteradmin ;
+ALTER TABLE fotos OWNER TO twitteradmin ;     
+ALTER TABLE hashtags OWNER TO twitteradmin ;
+ALTER TABLE hashtagstweets OWNER TO twitteradmin ;
+ALTER TABLE likes OWNER TO twitteradmin ;         
+ALTER TABLE retweets OWNER TO twitteradmin ;
+ALTER TABLE seguidors OWNER TO twitteradmin ;
+ALTER TABLE tweets OWNER TO twitteradmin ;   
+ALTER TABLE usuaris OWNER TO twitteradmin ;
+ALTER TABLE usuarislikescomentaris OWNER TO twitteradmin ;
+
