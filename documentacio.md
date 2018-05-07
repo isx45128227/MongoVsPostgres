@@ -56,22 +56,25 @@ As a superuser we have to run different commands in ordrer to install
 * There is a configuration file placed in /var/lib/pgsql/data/ that is 
   named _pg_hba.conf_ where we can change different parameters of the client 
   authentication (HBA stands for host-based authentication).
+  
   The general format for this file is a set of records where each record 
   specifies a connection type, a client IP address range, a database name, 
   a user name, and the authentication method to be used for connection 
   matching this parameters.
+  
   If one record is chosen and the authentication fails, subsequent records 
-  are not considered. 
+  are not considered.
+  
   If no record matches, access is denied. 
   
   Before explaining the divergences between the options we use, we should 
   differenciate 4 different **types** of connection:
   
-      * Local: This option matches connection attempts using Unix-domain sockets. 
-      * Host: This option matches connection attempts using TCP/IP, the most commonly used.
-      * Hostssl: This option matches connection attempts made using TCP/IP 
-                 but only when the connection is made with SSL encryption.
-      * Hostnossl: This option has the opposite behaviour of hostssl. 
+   * Local: This option matches connection attempts using Unix-domain sockets. 
+   * Host: This option matches connection attempts using TCP/IP, the most commonly used.
+   * Hostssl: This option matches connection attempts made using TCP/IP 
+              but only when the connection is made with SSL encryption.
+   * Hostnossl: This option has the opposite behaviour of hostssl. 
   
   Here we will see the most commonly used options and their meaning. 
   
@@ -87,39 +90,40 @@ As a superuser we have to run different commands in ordrer to install
   
   For the **auth-method** there are possible choices to consider:
   
-      Choice    |   Definition
-      ----------|-------------------------------------
-      trust     | Allow the connection unconditionally.
-      reject    | Reject the connection unconditionally.
-      md5       | Require the client to supply an encrypted password for authentication. Is sent encrypted.
-      password  | Require the client to supply an unencrypted password for authentication. Is sent in clear text.
-      gss       | Use GSSAPI to authenticate the user. 
-      sspi      | Use SSPI to authenticate the user. 
-      krb5      | Use Kerberos V5 to authenticate the user.
-      ident     | Obtain the operating system user name of the client by contacting the ident server on the client and check if it matches the requested database user name. When specified for local connections, peer authentication will be used instead.
-      peer      | Obtain the client's operating system user name from the operating system and check if it matches the requested database user name.
-      ldap      | Authenticate using an LDAP server.
-      radius    | Authenticate using a RADIUS server.
-      cert      | Authenticate using SSL client certificates. 
-      pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
+  
+   Choice    |   Definition
+   ----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   trust     | Allow the connection unconditionally.
+   reject    | Reject the connection unconditionally.
+   md5       | Require the client to supply an encrypted password for authentication. Is sent encrypted.
+   password  | Require the client to supply an unencrypted password for authentication. Is sent in clear text.
+   gss       | Use GSSAPI to authenticate the user. 
+   sspi      | Use SSPI to authenticate the user. 
+   krb5      | Use Kerberos V5 to authenticate the user.
+   ident     | Obtain the operating system user name of the client by contacting the ident server on the client and check if it matches the requested database user name. When specified for local connections, peer authentication will be used instead.
+   peer      | Obtain the client's operating system user name from the operating system and check if it matches the requested database user name.
+   ldap      | Authenticate using an LDAP server.
+   radius    | Authenticate using a RADIUS server.
+   cert      | Authenticate using SSL client certificates. 
+   pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
   
   
-      There are lots of possible configurations, but here you will see simple examples
-      
-      * Allow local users to enter without authentication
-          
-            `local   all             all                                     trust`
-      
-      * Allow any user from any host with IP address 192.168.93.x to connect
-        to database "postgres" as the same user name that ident reports for
-        the connection.
-        
-            `host    postgres        all             192.168.93.0/24         ident`
-      
-      * Allow any user from hosts in the example.com domain to connect to
-        any database if the user's password is correctly supplied.
-        
-            `host    all             all             .example.com            md5`
+   There are lots of possible configurations, but here you will see simple examples
+   
+   * Allow local users to enter without authentication
+       
+         `local   all             all                                     trust`
+   
+   * Allow any user from any host with IP address 192.168.93.x to connect
+     to database "postgres" as the same user name that ident reports for
+     the connection.
+     
+         `host    postgres        all             192.168.93.0/24         ident`
+   
+   * Allow any user from hosts in the example.com domain to connect to
+     any database if the user's password is correctly supplied.
+     
+         `host    all             all             .example.com            md5`
   
   
   
@@ -174,8 +178,7 @@ you can visit the official website
 
 
 
-#### Now we have both interfaces installed in our system so in order to 
-have data to process, we should create a database.
+#### Now we have both interfaces installed in our system so in order to have data to process, we should create a database.
 
 
 ### Starting up the database
@@ -663,23 +666,23 @@ testing different queries to compare speed rates and the number of accesses.
           Here it is shown the different tables and the fields that are joined to other tables.
           
         
-          Table                  |Field                   |  Relation           
-        -------------------------|------------------------|------------
-         Tweets                  | id_usuari              | Table usuaris 
-         Tweets                  | foto                   | Table fotos 
-         Comentaris              | id_usuari_comentari    | Table usuaris 
-         Comentaris              | id_tweet               | Table tweets 
-         Likes                   | id_usuari_like         | Table usuaris
-         Likes                   | id_tweet               | Table tweets
-         Usuarislikescomentaris  | id_usuari              | Table usuaris 
-         Usuarislikescomentaris  | id_comentari           | Table comentaris 
-         Fotos                   | id_tweet               | Table tweets
-         Retweets                | id_usuari_retweet      | Table usuaris 
-         Retweets                | id_tweet               | Table tweets
-         Hashtagstweets          | id_tweet               | Table tweets
-         Hashtagstweets          | id_hashtag             | Table hashtags
-         Seguidors               | id_usuari_seguit       | Table usuaris 
-         Seguidors               | id_usuari_seguidor     | Table usuaris 
+          Table                   |        Field           |  Relation           
+          ------------------------|------------------------|-------------------
+          Tweets                  | id_usuari              | Table usuaris 
+          Tweets                  | foto                   | Table fotos 
+          Comentaris              | id_usuari_comentari    | Table usuaris 
+          Comentaris              | id_tweet               | Table tweets 
+          Likes                   | id_usuari_like         | Table usuaris
+          Likes                   | id_tweet               | Table tweets
+          Usuarislikescomentaris  | id_usuari              | Table usuaris 
+          Usuarislikescomentaris  | id_comentari           | Table comentaris 
+          Fotos                   | id_tweet               | Table tweets
+          Retweets                | id_usuari_retweet      | Table usuaris 
+          Retweets                | id_tweet               | Table tweets
+          Hashtagstweets          | id_tweet               | Table tweets
+          Hashtagstweets          | id_hashtag             | Table hashtags
+          Seguidors               | id_usuari_seguit       | Table usuaris 
+          Seguidors               | id_usuari_seguidor     | Table usuaris 
         
 
         * Now we create the indexs.
