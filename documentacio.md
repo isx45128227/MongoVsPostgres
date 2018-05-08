@@ -53,14 +53,23 @@ As a superuser we have to run different commands in ordrer to install
     `[root@host ]# passwd postgres`
     
     
-* There is a configuration file placed in /var/lib/pgsql/data/ that is 
-  named _pg_hba.conf_ where we can change different parameters of the client 
+* There is a configuration file placed in _/var/lib/pgsql/data/_ that is 
+  named [_pg_hba.conf_](https://www.postgresql.org/docs/9.3/static/auth-pg-hba-conf.html) 
+  where we can change different parameters of the client 
   authentication (HBA stands for host-based authentication).
   
   The general format for this file is a set of records where each record 
-  specifies a connection type, a client IP address range, a database name, 
-  a user name, and the authentication method to be used for connection 
-  matching this parameters.
+  specifies:
+      
+   * A connection type, 
+   
+   * A client IP address range,
+   
+   * A database name,
+   
+   * A user name and
+   
+   * The authentication method to be used for connection matching this parameters.
   
   If one record is chosen and the authentication fails, subsequent records 
   are not considered.
@@ -70,13 +79,16 @@ As a superuser we have to run different commands in ordrer to install
   Before explaining the divergences between the options we use, we should 
   differenciate 4 different **types** of connection:
   
-   * Local: This option matches connection attempts using Unix-domain sockets. 
-   * Host: This option matches connection attempts using TCP/IP, the most commonly used.
-   * Hostssl: This option matches connection attempts made using TCP/IP 
-              but only when the connection is made with SSL encryption.
-   * Hostnossl: This option has the opposite behaviour of hostssl. 
+   * **Local**: This option matches connection attempts using Unix-domain sockets. 
+   
+   * **Host**: This option matches connection attempts using TCP/IP, the most commonly used.
+   
+   * **Hostssl**: This option matches connection attempts made using TCP/IP 
+                  but only when the connection is made with SSL encryption.
+                  
+   * **Hostnossl**: This option has the opposite behaviour of hostssl. 
   
-  Here we will see the most commonly used options and their meaning. 
+  Here we will see the most commonly used **options** and their meaning. 
   
   
   Option       |    Usage
@@ -108,33 +120,33 @@ As a superuser we have to run different commands in ordrer to install
    pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
   
   
-   There are lots of possible configurations, but here you will see simple examples
+   There are lots of possible configurations, but here you will see simple examples we use the most.
    
    * Allow local users to enter without authentication
        
-         `local   all             all                                     trust`
+       `local   all             all                                     trust`
    
    * Allow any user from any host with IP address 192.168.93.x to connect
      to database "postgres" as the same user name that ident reports for
      the connection.
      
-         `host    postgres        all             192.168.93.0/24         ident`
+       `host    postgres        all             192.168.93.0/24         ident`
    
    * Allow any user from hosts in the example.com domain to connect to
      any database if the user's password is correctly supplied.
      
-         `host    all             all             .example.com            md5`
+       `host    all             all             .example.com            md5`
   
   
   
 ### MongoDB installation
 
 As a superuser we have to run different commands in ordrer to install 
-**MongoDB** in our system:
+**MongoDB** in the system:
 
 * Install MongoDB package.
 
-First of all we need to add Mongo's repository to our machine.
+First of all we need to add Mongo's repository to the machine.
 
 `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
 
@@ -167,19 +179,37 @@ There is a possibility of creating a configuration file for mongod instance at s
 That file contains settings that are equivalent to mongod command-line options. 
 Using it, makes managing options easier. 
 
-The general format for this file is in YAML format. You can change different 
-options such as systemLog, processManagement, net, setParameter, security, 
-operationProfiling, storage, replication and auditLog options.
+The general format for this file is in [_YAML_](https://en.wikipedia.org/wiki/YAML) language.
 
-For this project we use the default configuration file. 
+In this case, we can configure different options such as:
+
+* SystemLog,
+ 
+* processManagement, 
+
+* net, 
+
+* setParameter, 
+
+* security, 
+
+* operationProfiling, 
+
+* storage, 
+
+* replication and 
+
+* auditLog options.
+
+For this project is used the default configuration file because 
+we use different functions to obtain extra data from queries. 
 But if you are interested in knowing the different options to use,
-you can visit the official website 
-(https://docs.mongodb.com/v2.6/reference/configuration-options/). 
-
+you can visit the [official website](https://docs.mongodb.com/v2.6/reference/configuration-options/). 
 
 
 #### Now we have both interfaces installed in our system so in order to have data to process, we should create a database.
 
+---
 
 ### Starting up the database
 
@@ -217,7 +247,7 @@ Once we have defined the structure we are going to use, we can start creating th
 ### Database Twitter on Postgres
 
 It is created a script that includes Twitter database, so the only thing
-we have to do is to import that script.
+we have to do is to import [that script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql).
 
 
 * First of all we init session in postgres.
@@ -236,42 +266,43 @@ we have to do is to import that script.
 
     `twitter=# \d`
 
-                        List of relations
-                        
-Schema |                 Name                  |   Type   |  Owner
--------|---------------------------------------|----------|-------------
-public | comentaris                            | table    | twitteradmin
-public | comentaris_id_comentari_seq           | sequence | twitteradmin
-public | fotos                                 | table    | twitteradmin
-public | fotos_id_foto_seq                     | sequence | twitteradmin
-public | hashtags                              | table    | twitteradmin
-public | hashtags_id_hashtag_seq               | sequence | twitteradmin
-public | hashtagstweets                        | table    | twitteradmin
-public | hashtagstweets_id_hashtagtweet_seq    | sequence | twitteradmin
-public | likes                                 | table    | twitteradmin
-public | likes_id_like_seq                     | sequence | twitteradmin
-public | retweets                              | table    | twitteradmin
-public | retweets_id_retweet_seq               | sequence | twitteradmin
-public | seguidors                             | table    | twitteradmin
-public | seguidors_id_seq                      | sequence | twitteradmin
-public | tweets                                | table    | twitteradmin
-public | tweets_id_tweet_seq                   | sequence | twitteradmin
-public | usuaris                               | table    | twitteradmin
-public | usuaris_id_usuari_seq                 | sequence | twitteradmin
-public | usuarislikescomentaris                | table    | twitteradmin
-public | usuarislikescomentaris_id_likecom_seq | sequence | twitteradmin
+                          List of relations
+                          
+  Schema |                 Name                  |   Type   |  Owner
+  -------|---------------------------------------|----------|-------------
+  public | comentaris                            | table    | twitteradmin
+  public | comentaris_id_comentari_seq           | sequence | twitteradmin
+  public | fotos                                 | table    | twitteradmin
+  public | fotos_id_foto_seq                     | sequence | twitteradmin
+  public | hashtags                              | table    | twitteradmin
+  public | hashtags_id_hashtag_seq               | sequence | twitteradmin
+  public | hashtagstweets                        | table    | twitteradmin
+  public | hashtagstweets_id_hashtagtweet_seq    | sequence | twitteradmin
+  public | likes                                 | table    | twitteradmin
+  public | likes_id_like_seq                     | sequence | twitteradmin
+  public | retweets                              | table    | twitteradmin
+  public | retweets_id_retweet_seq               | sequence | twitteradmin
+  public | seguidors                             | table    | twitteradmin
+  public | seguidors_id_seq                      | sequence | twitteradmin
+  public | tweets                                | table    | twitteradmin
+  public | tweets_id_tweet_seq                   | sequence | twitteradmin
+  public | usuaris                               | table    | twitteradmin
+  public | usuaris_id_usuari_seq                 | sequence | twitteradmin
+  public | usuarislikescomentaris                | table    | twitteradmin
+  public | usuarislikescomentaris_id_likecom_seq | sequence | twitteradmin
 
 
 
 Here we see that for each table it is created a sequence, that means that 
 each single table has an _id_ field that is bigserial and this serial is
-a sequence of numbers starting at 1.
+a sequence of numbers starting at 1. 
+We use this in order to maintain coherence on database.
 
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
 
     I have created _Python_ scripts which generate lots of data to add to twitter database. 
-    They are placed in Postgres/Funcions populate. 
+    They are placed in [Postgres/Funcions populate](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Funcions%20populate). 
     
     There is one script for each table, and the only thing we have to do to obtain 
     that big amount of data is to execute the program and redirect the output to a file.
@@ -284,7 +315,8 @@ a sequence of numbers starting at 1.
     
         `twitter=# COPY hashtags FROM '/tmp/hashtags.csv' DELIMITER ',' CSV HEADER;`
 
-    * That is the process we should follow for each table.
+    * That is the process we should follow for each table. 
+      Take into account that every script generates different data, and it is not necessary all table data.
 
         `twitter=# COPY usuaris FROM '/tmp/usuaris.csv' DELIMITER ',' CSV HEADER;`
         
@@ -307,30 +339,30 @@ a sequence of numbers starting at 1.
 
 #### Script name and the table associated with
  
-Table                  | Script
------------------------|-------------------------------------------
-comentaris             | populate_comentaris.py    
-fotos                  | populate_fotos.py   
-hashtags               | populate_hashtags.py    
-hashtagstweets         | populate_hashtagstweets.py    
-likes                  | populate_likes.py    
-retweets               | populate_retweets.py   
-seguidors              | populate_seguidors.py    
-tweets                 | populate_tweets.py    
-usuaris                | populate_usuaris.py   
-usuarislikescomentaris | populate_usuarislikescomentaris.py    
+  Table                  | Script
+  -----------------------|-------------------------------------------
+  comentaris             | populate_comentaris.py    
+  fotos                  | populate_fotos.py   
+  hashtags               | populate_hashtags.py    
+  hashtagstweets         | populate_hashtagstweets.py    
+  likes                  | populate_likes.py    
+  retweets               | populate_retweets.py   
+  seguidors              | populate_seguidors.py    
+  tweets                 | populate_tweets.py    
+  usuaris                | populate_usuaris.py   
+  usuarislikescomentaris | populate_usuarislikescomentaris.py    
 
 
 There is also other tools that can populate data into Postgres database. 
-The most commonly used is pg_loader that works with lots of data, but in 
-this case we use an easier method.
+The most commonly used is [*pg_loader*](http://pgloader.readthedocs.io/en/latest/tutorial/tutorial.html) 
+that works with lots of data, but in this case we use an easier method.
 
 
-##### In order to add the hashtag to the tweet, 
-I have created a function in PLPGSQL that adds the hashtag to each tweet.
+##### With the structure followed, in table tweets we don't have hashtags if they are used in. 
+##### So in order to add the hashtag to the tweet, there is a function in PLPGSQL that adds the hashtag to each tweet.
 ##### Once we have added all information to twitter database we should run this function. 
 
-* First of all we import the function from /tmp.
+* First of all we import the [function](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/funcio_plpgsql.sql) from /tmp.
 
     `twitter=# \i /tmp/funcio_plpgsql.sql;`
 
@@ -345,9 +377,11 @@ I have created a function in PLPGSQL that adds the hashtag to each tweet.
 
 ### Postgres database to MongoDB
 
-Once we have created our Postgres database we can export all data into _json_ format. 
-Postgres has different functions that can convert from Postgres to _json_ files.
-The only thing we have to do is to execute the function and see the result.
+Once we have created our Postgres database we can export all data into _json_ format.
+MongoDB use _json_ documents to order the information into collections.
+
+Postgres has different functions that can convert from Postgres language to _json_ files.
+The only thing we have to do is to execute that function and see the result.
 
 `twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
            password,username,telefon,data_alta,descripcio,ciutat,url,idioma,
@@ -374,70 +408,65 @@ Here we are creating an output in _json_ format with all information about users
 
 That's fine if we only want to see the output, but we need it to create our full database _json_ files.
 
-MongoDB's organization is different from Postgres, so we are going to create **two** different 
-collections for MongoDB called **users** and **tweets**. 
+As said before, MongoDB's organization is different from Postgres, 
+so we are going to create **two** different collections for MongoDB called **users** and **tweets**. 
 
-As I have tested, two days after executing the function the results haven't 
-appeared (we must take into account that there are more than 3 million rows).
+As I have tested, two days after executing the function without having indexes in Postgres 
+the results haven't appeared (we must take into account that there are more than 3 million rows).
  
-To solve this I added indexes to Postgres database in order to reduce the number 
+To solve this, I added indexes to Postgres database in order to reduce the number 
 of accesses to each table and to obtain the result faster (if we don't use indexes 
 it will cost a lot of time to generate _json_ files).
 
 Every index is created in a field that is linked to another table.
 
+We just need to add indexes in Postgres:
 
-#### TWEETS
+* First of all we create index in **tweets** table
 
-`twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+    `twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
+    
+    `twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
 
-`twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+* Secondly we create index in **comentaris** table
 
+    `twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+    
+    `twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
 
-#### COMENTARIS 
+* Thirdly  we create index in **likes** table
 
-`twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
+    `twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
+    
+    `twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
+    
+* Fourthly we create index in **usuarislikescomentaris** table
 
-`twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+    `twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
+    
+    `twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
 
+* Fifthly we create index in **fotos** table
 
-#### LIKES
+    `twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
 
-`twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
+* Sixthly we create index in **retweets** table
 
-`twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
+    `twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
+    
+    `twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
 
+* Seventhly we create index in **hashtagstweets** table
 
-#### USUARISLIKESCOMENTARIS
+    `twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
+    
+    `twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
 
-`twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
+* Lastly we create index in **seguidors** table
 
-`twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
-
-
-#### FOTOS
-
-`twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
-
-
-#### RETWEETS
-
-`twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
-
-`twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
-
-
-#### HASHTAGSTWEETS
-
-`twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
-
-`twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
-
-#### SEGUIDORS
-
-`twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
-
-`twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+    `twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
+    
+    `twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
 
 
 After adding the indexes we are ready to create _json_ files. 
@@ -484,11 +513,11 @@ We just need to follow the next steps:
     FROM tweets) tweets;' > /tmp/tweets.json`
 
 
-Function row_to_json converts one row into _json_ document. 
-That means that we can transform every row of our table in Postgres into 
+Function _row_to_json_ converts one row into _json_ document. 
+That means that we can transform each row of our table in Postgres into 
 different documents in _json_ format. 
 
-Function array_agg creates an array. In this case we use this function to 
+Function _array_agg_ creates an array. In this case we use this function to 
 create different arrays of objects.
 
 
@@ -497,16 +526,16 @@ create different arrays of objects.
 
 Finally, we have to add Twitter database to MongoDB. 
 In this case is not necessary to run the interface. 
-We can directly import database from _json_ or _csv_ file.
+We can directly import database from _json_ or _csv_ file to MongoDB interface.
 
 In this case we have **two** json files, the first one includes 
 **tweets collection** and the second one includes **users collection**.
 
-* First we import users.
+* First we import users collection.
 
     `[user@host ]$ mongoimport --db twitter --collection users --file /tmp/users.json --jsonArray`
 
-* Then we import tweets.
+* Then we import tweets collection.
 
     `[user@host ]$ mongoimport --db twitter --collection tweets --file /tmp/tweets.json --jsonArray`
 
@@ -525,7 +554,7 @@ In this case we have **two** json files, the first one includes
 
     `> use twitter`
 
-* Later we can see the different collections.
+* Later we can see the different collections by using
     
     `> show collections`
 
@@ -554,13 +583,14 @@ PostgreSQL                                                                      
 `INSERT INTO tweets(id_tweet,text_tweet,id_usuari)VALUES (DEFAULT,'Example tweet',1);`                            | `db.tweets.insert({ id_tweet: 1, text_tweet:'Example tweet', id_usuari: 1 })`
 `SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
+`DELETE FROM tweets WHERE id_tweet=3000;`                                                                         | `db.tweets.remove({ _id: 3000 })`
 
 ---
 
 
 ## Testing query performance
 
-Once we have ready our system with both interfaces, we are able to start 
+Once we have the system with both interfaces, we are able to start 
 testing different queries to compare speed rates and the number of accesses.
 
 
@@ -569,7 +599,7 @@ testing different queries to compare speed rates and the number of accesses.
 
 * To begin with we should remove indexes we have created before on Postgres.
 
-    There is a script we can use to DROP all indexes. It is placed in Postgres/delete_indexs.sql.
+    There is a script we can use to DROP all indexes. It is placed in [Postgres/delete_indexs.sql](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/delete_indexs.sql).
     We enter to Twitter database and import the script.
     
     `twitter=# \i /tmp/delete_indexs.sql` 
@@ -770,7 +800,7 @@ testing different queries to compare speed rates and the number of accesses.
         
         Having created the index as if it was Google Search, we should use another way to search the previous query.
 
-        `db.tweets.find({$text:{$search:"/#chip/"}},{"text_tweet":1,"_id":0}).explain("executionStats")`
+        `> db.tweets.find({$text:{$search:"/#chip/"}},{"text_tweet":1,"_id":0}).explain("executionStats")`
         
         ![Mongo query2 Twitter](MongoDB/imatges/query2.png)
         
@@ -796,13 +826,14 @@ Both of them include the entire twitter database.
 
 ### Postgres docker
 
-* First of all we download and run Postgres docker from DockerHub, 
+* First of all we download and run Postgres docker from [DockerHub](https://hub.docker.com/r/isx45128227/postgrestwitter/), 
   where I have the image already created. 
 
     `[user@host ]$ docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
 
 * Later we run our queries using psql (user password is **jupiter**). 
+  Check first the ip address of your docker, it could not be the same.
   You should wait a little bit until twitter database is ready (about 1 minute).
 
     `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c 'SELECT * FROM usuaris;'`
@@ -813,19 +844,20 @@ Both of them include the entire twitter database.
 
 
 
-* It is also created a Dockerfile with the specifications, but the main problem is 
-  that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
+* It is also created a [Dockerfile](https://github.com/isx45128227/MongoVsPostgres/blob/master/dockerPostgres/Dockerfile) 
+  with the specifications, but the main problem is that the dump database is about 2GB and GitHub doesn't allow me to upload this file.
 
 
 ### MongoDB docker
 
-* First of all we download and run MongoDB docker from DockerHub, where I also have the image already created. 
+* First of all we download and run MongoDB docker from [DockerHub](https://hub.docker.com/r/isx45128227/mongotwitter/), 
+  where I also have the image already created. 
 
     `[user@host ]$ docker run --name mongotwitter -h mongotwitter -d isx45128227/mongotwitter`
 
 * There is a problem with Docker and MongoDB. Docker interface does not 
   allow Mongo to keep database data, so before we start using our 
-  docker mongo we have to restore information.
+  docker mongo we have to restore database information.
 
 * First of all we enter into the docker.
 
@@ -837,6 +869,7 @@ Both of them include the entire twitter database.
 
 * Later we run our queries using mongo. We can run this command inside 
   the docker or if we have MongoDB installed in our machine we can run it outside. 
+  Check first the ip address of your docker, it could not be the same.
 
     `[user@host ]$ mongo --host 172.17.0.3:27017 twitter`
 
@@ -850,5 +883,5 @@ Both of them include the entire twitter database.
     `> db.tweets.find({"text_tweet":/#/i})`
 
 
-* It is also created a Dockerfile with the specifications, but the main 
-  problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
+* It is also created a [Dockerfile](https://github.com/isx45128227/MongoVsPostgres/blob/master/dockerMongo/Dockerfile) 
+  with the specifications, but the main problem is that the dump database is about 3GB and GitHub doesn't allow me to upload this file.
