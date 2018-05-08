@@ -292,11 +292,10 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
   public | usuarislikescomentaris_id_likecom_seq | sequence | twitteradmin
 
 
-
-Here we see that for each table it is created a sequence, that means that 
-each single table has an _id_ field that is bigserial and this serial is
-a sequence of numbers starting at 1. 
-We use this in order to maintain coherence on database.
+  Here we see that for each table it is created a sequence, that means that 
+  each single table has an _id_ field that is bigserial and this serial is
+  a sequence of numbers starting at 1. 
+  We use this in order to maintain coherence on database.
 
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
@@ -305,9 +304,9 @@ We use this in order to maintain coherence on database.
     They are placed in [Postgres/Funcions populate](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Funcions%20populate). 
     
     There is one script for each table, and the only thing we have to do to obtain 
-    that big amount of data is to execute the program and redirect the output to a file.
+    that big amount of data is to execute the script and redirect the output to a file.
 
-    * First we create information of hashtags table with our script and put it in /tmp directory:
+    * First we create information of hashtags table with the script and put it in /tmp directory:
     
         `[user@host ]$ python populate_hashtags.py > /tmp/hashtags.csv`
 
@@ -337,25 +336,25 @@ We use this in order to maintain coherence on database.
         `twitter=# COPY usuarislikescomentaris FROM '/tmp/usuarislikescomentaris.csv' DELIMITER ',' CSV HEADER;`
 
 
-#### Script name and the table associated with
- 
-  Table                  | Script
-  -----------------------|-------------------------------------------
-  comentaris             | populate_comentaris.py    
-  fotos                  | populate_fotos.py   
-  hashtags               | populate_hashtags.py    
-  hashtagstweets         | populate_hashtagstweets.py    
-  likes                  | populate_likes.py    
-  retweets               | populate_retweets.py   
-  seguidors              | populate_seguidors.py    
-  tweets                 | populate_tweets.py    
-  usuaris                | populate_usuaris.py   
-  usuarislikescomentaris | populate_usuarislikescomentaris.py    
+        #### Script name and the table associated with
+         
+          Table                  | Script
+          -----------------------|-------------------------------------------
+          comentaris             | populate_comentaris.py    
+          fotos                  | populate_fotos.py   
+          hashtags               | populate_hashtags.py    
+          hashtagstweets         | populate_hashtagstweets.py    
+          likes                  | populate_likes.py    
+          retweets               | populate_retweets.py   
+          seguidors              | populate_seguidors.py    
+          tweets                 | populate_tweets.py    
+          usuaris                | populate_usuaris.py   
+          usuarislikescomentaris | populate_usuarislikescomentaris.py    
 
 
-There is also other tools that can populate data into Postgres database. 
-The most commonly used is [*pg_loader*](http://pgloader.readthedocs.io/en/latest/tutorial/tutorial.html) 
-that works with lots of data, but in this case we use an easier method.
+        There are other tools that can populate data into Postgres database. 
+        The most commonly used is [*pg_loader*](http://pgloader.readthedocs.io/en/latest/tutorial/tutorial.html) 
+        that works with lots of data, but in this case we use an easier method.
 
 
 ##### With the structure followed, in table tweets we don't have hashtags if they are used in. 
@@ -377,7 +376,7 @@ that works with lots of data, but in this case we use an easier method.
 
 ### Postgres database to MongoDB
 
-Once we have created our Postgres database we can export all data into _json_ format.
+Once we have created the Postgres database we can export all data into _json_ format.
 MongoDB use _json_ documents to order the information into collections.
 
 Postgres has different functions that can convert from Postgres language to _json_ files.
@@ -406,7 +405,7 @@ Result: `{"id_usuari":12592,
 
 Here we are creating an output in _json_ format with all information about users and their followers.
 
-That's fine if we only want to see the output, but we need it to create our full database _json_ files.
+That's fine if we only want to see the output, but we have to create a full database _json_ files.
 
 As said before, MongoDB's organization is different from Postgres, 
 so we are going to create **two** different collections for MongoDB called **users** and **tweets**. 
@@ -526,7 +525,7 @@ create different arrays of objects.
 
 Finally, we have to add Twitter database to MongoDB. 
 In this case is not necessary to run the interface. 
-We can directly import database from _json_ or _csv_ file to MongoDB interface.
+We can directly import database from _json_ or _csv_ file to the interface.
 
 In this case we have **two** json files, the first one includes 
 **tweets collection** and the second one includes **users collection**.
@@ -544,7 +543,7 @@ In this case we have **two** json files, the first one includes
 
 ---
 
-##### Once we have added all information to Twitter database we can start using it. 
+Once we have added all information to Twitter database we can start using it. 
 
 * First of all we enter to MongoDB interface.
 
@@ -766,11 +765,11 @@ testing different queries to compare speed rates and the number of accesses.
         
         #### MongoDB
         
-            Now we add the Index in MongoDB. The syntax and their creation
-            differs from Postgres, but it has the same effect. 
-            
-            That index can search in MongoDB as it was Google Search.
-            To do it we should follow this step:
+           Now we add the Index in MongoDB. The syntax and their creation
+           differs from Postgres, but it has the same effect. 
+           
+           That index can search in MongoDB as it was Google Search.
+           To do it we should follow this step:
 
            `> db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})`
            
