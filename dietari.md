@@ -17,4 +17,4 @@ Dia | Objectius | Tasca realitzada | Hores
 03/05/2018 | Documentació Postgres i Mongo. Comprovació Docker MongoDB. Crear queries lents |  Documentació Postgres i Mongo. Comprovació Docker MongoDB. Creació indexs MongoDB i $text. Cerques a Postgres amb EXPLAIN i a MongoDB amb .explain("executionStats"). | 6 hores.
 04/05/2018 | Documentació queries Postgres i Mongo. Crear queries lents a MongoDB. Crear Índexs a Postgres i a MongoDB. | Primers queries lents i observació dels resultats. Índexs a Postgres i Mongo, execució dels queries lents i observació de resultats. Cerca informació pgloader. Visualització fitxer pg_hba.conf i canvis en accés a BBDD Postgres. | 4 hores.
 07/05/2018 | Queries Postgres i Mongo. Creació nou rol a Postgres i canvis en el docker. | Canvis en docker Postgres. Documentació de configuració Postgres i Mongo.  | 4 hores.
-08/05/2018 | Documentació i queries Postgres i Mongo. | | 4 hores.
+08/05/2018 | Documentació i queries Postgres i Mongo. | Documentació. Cerca informació System Catalogs de Postgres. Prova consultes al diccionari de dades de Postgres. Consultes amb explainSelect a Mongo. | 4 hores.
