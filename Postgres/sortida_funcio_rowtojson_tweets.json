@@ -1,0 +1,78 @@
+{"_id":3,
+ "text_tweet":"Tweet 3 de prova d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres. que la seva ocupacio ha de ser com a maxim 280 caracters per comparar Mongo amb Postgres.",
+ "id_usuari":16652,
+ "data_tweet":"2018-04-25T09:41:00",
+ "fotos":null,
+ "geo":{"f1":null,"f2":null},
+ "hashtags":null,
+ "likes":[
+     {"id_usuari_like":7110,
+      "data_like":"2018-04-23T11:56:00",
+      "esborrat":false}
+  ],
+      
+  "comentaris":[
+      {"id_usuari_comentari":60337,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 271803 del tweet 3.",
+       "likes_comentari":null},
+       
+      {"id_usuari_comentari":32089,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 281164 del tweet 3."
+       "likes_comentari":null},
+       
+      {"id_usuari_comentari":18565,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 315265 del tweet 3.",
+       "likes_comentari":[
+           {"id_usuari":651774}
+       ]
+      },
+      {"id_usuari_comentari":92283,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 427704 del tweet 3.",
+       "likes_comentari":null},
+       
+      {"id_usuari_comentari":44310,
+      "data_comentari":"2018-04-23T10:37:00",
+      "text_comentari":"Comentari 472337 del tweet 3.",
+      "likes_comentari":null},
+      
+      {"id_usuari_comentari":25826,
+      "data_comentari":"2018-04-23T10:37:00",
+      "text_comentari":"Comentari 499781 del tweet 3.",
+      "likes_comentari":null},
+      
+      {"id_usuari_comentari":61095,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 548661 del tweet 3.",
+       "likes_comentari":[
+           {"id_usuari":47764}
+       ]
+      },
+      
+      {"id_usuari_comentari":5839,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 666087 del tweet 3.",
+       "likes_comentari":null},
+       
+      {"id_usuari_comentari":33625,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 823714 del tweet 3.",
+       "likes_comentari":null},
+       
+      {"id_usuari_comentari":96983,
+       "data_comentari":"2018-04-23T10:37:00",
+       "text_comentari":"Comentari 914865 del tweet 3.",
+       "likes_comentari":[
+           {"id_usuari":479680}
+       ]
+      },
+      
+      {"id_usuari_comentari":38898,
+      "data_comentari":"2018-04-23T10:37:00",
+      "text_comentari":"Comentari 938755 del tweet 3.",
+      "likes_comentari":null}
+      ]
+}

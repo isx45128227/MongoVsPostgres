@@ -1,0 +1,39 @@
+{"id_usuari":1,
+ "nom":"pere",
+ "cognoms":"serrat",
+ "password":"pass1",
+ "username":"pere_serrat_1",
+ "telefon":"698543568",
+ "data_alta":"2018-04-23 09:29:00",
+ "descripcio":"usuari pereserrat",
+ "ciutat":"albacete",
+ "url":"https://www.twitter.com/pere_serrat1",
+ "idioma":"castella",
+ "email":"pereserrat1@gmail.com",
+ "seguidors":[
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":86380
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":77750
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":56371
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":97651
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":85459
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":37223
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":58841
+     },
+     {"data_seguidor":"2018-04-23 11:29:00",
+      "id_usuari_seguidor":73639
+     }
+ ]
+}
