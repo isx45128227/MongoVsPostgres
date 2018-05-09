@@ -7,6 +7,28 @@ Syntax used in MongoDB differs from Postgres, but it's really simple to understa
 In this project you will see how to use syntax in MongoDB and Postgres.
 
 
+## A little bit of information
+
+MongoDB is an open source database. It’s designed to be agile and scalable, 
+and it uses dynamic schemas so that you can create records without defining the structure first. 
+It also supports hierarchical documentation of data.
+
+PostgreSQL is also open source, but it’s a relational database, 
+that means it is much more concerned about how we store data. 
+It's really important defining an ordered structure so that we can create coherent information.
+
+Over the past decade, many of the assumptions that drove the development of relational databases have changed:
+
+* Demands for higher developer productivity and faster time to market, compressing release cycles from months and years to days and weeks.
+
+* The need to manage massive increases in new, rapidly changing data types.
+
+* The wholesale shift to distributed systems and cloud computing, enabling developers to exploit on-demand, 
+  highly scalable compute and storage infrastructure, with the ability to serve audiences any place they work and play around the globe.
+  
+As a result, non-relational or “NoSQL” databases, like MongoDB, have emerged in order to address the requirements of new applications, and modernize existing workloads. 
+  
+
 ## System specifications
 
 This project has been made in Linux Fedora 24.
