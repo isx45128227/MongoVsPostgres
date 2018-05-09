@@ -31,7 +31,10 @@
 			"text_tweet" : 1
 		},
 		"default_language" : "english",
-		"language_override" : "language",
+		"language_override" : 
+		
+		
+		"language",
 		"textIndexVersion" : 2
 	}
 ]
@@ -40,10 +43,38 @@
 
 var result = db.tweets.find({$text:{$search:"5009817"}},{"id_usuari":1})
 
-var a = db.users.find({"id_usuari":result.id_usuari})
+var usuari = tojson( result.next().id_usuari); 
+
+db.users.find({"id_usuari":parseInt(usuari)})
 
 
-> while (result.hasNext()) { print tojson((result.next()))."id_usuari" }
-> var b=tojson(a)
-> b
+// Find num usuaris que el segueixen 
 
+db.users.aggregate([
+					  {
+						  "$group": {
+							   "_id": {"_id":"$id_usuari"},
+							   "num_seguidors": {"$sum": 1}
+						   }
+					  },
+					  {
+						  "$project": {
+							   "_id":false,
+							   "id_usuari": "$_id",
+							   "num_seguidors":"$num_seguidors"
+						   }
+					  }
+])
+
+
+// Find usuaris a qui segueix
+
+
+
+
+
+var myCursor = db.users.find( {} );
+while ( myCursor.hasNext() ) {    printjson( myCursor.next().id_usuari); }
+
+var myCursor = db.users.find( {} );
+while ( myCursor.hasNext() ) {    printjson( myCursor.next().tags[0]); }

@@ -840,7 +840,17 @@ Both of them include the entire twitter database.
     `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT count(*) FROM tweets WHERE text_tweet LIKE '%#sale%';"`
     
     `[user@host ]$ psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT * FROM tweets WHERE text_tweet LIKE '%#%';"`
-
+    
+  
+  If we want to override the password prompt, we must add into our home a file named **.pgpass** that contains the following line:
+  
+    `172.17.0.2:5432:twitter:docker:jupiter`
+    
+  And then change permissions to that file:
+   
+    `chmod 0600 .pgpass`
+    
+  Now we can execute queries without entering the password.
 
 
 * It is also created a [Dockerfile](https://github.com/isx45128227/MongoVsPostgres/blob/master/dockerPostgres/Dockerfile) 

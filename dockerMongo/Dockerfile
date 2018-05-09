@@ -11,7 +11,9 @@ ADD mongodb.repo /etc/yum.repos.d/
 RUN mkdir /tmp/twitter
 
 ADD twitter/users/users.bson /tmp/twitter/
+ADD twitter/users/users.metadata.json /tmp/twitter/
 ADD twitter/tweets/tweets.bson /tmp/twitter/
+ADD twitter/tweets/tweets.metadata.json /tmp/twitter/
 ADD restore.sh /tmp/
 
 RUN chmod +x /tmp/restore.sh
