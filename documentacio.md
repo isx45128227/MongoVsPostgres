@@ -36,7 +36,7 @@ As a result, non-relational or “NoSQL” databases, like MongoDB, have appeare
 
 ### Concepts
 
-   Many concepts in PostgreSQL have analogs in MongoDB. The table below shows the common concepts.
+    Many concepts in PostgreSQL have analogs in MongoDB. The table below shows the common concepts.
     
     PostgreSQL    |    MongoDB
     --------------------------------
