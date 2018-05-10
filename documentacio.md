@@ -36,15 +36,16 @@ As a result, non-relational or “NoSQL” databases, like MongoDB, have appeare
 
 ### Concepts
 
-Many concepts in PostgreSQL have analogs in MongoDB. The table below shows the common concepts.
-    
-PostgreSQL    |    MongoDB
---------------------------------
-Table         |   Collection
-Row           |   Document
-Column        |   Field
-JOIN          |   Embedded documents
-GROUP_BY      |   Aggregation Pipeline
+   Many concepts in PostgreSQL have analogs in MongoDB. The table below shows the common concepts.
+   
+   
+   PostgreSQL    |    MongoDB
+   --------------------------------
+   Table         |   Collection
+   Row           |   Document
+   Column        |   Field
+   JOIN          |   Embedded documents
+   GROUP_BY      |   Aggregation Pipeline
 
 
 ---
