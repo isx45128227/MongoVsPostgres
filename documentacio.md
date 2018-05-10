@@ -381,18 +381,18 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 
         #### Script name and the table associated with
          
-          Table                  | Script
-          -----------------------|-------------------------------------------
-          comentaris             | populate_comentaris.py    
-          fotos                  | populate_fotos.py   
-          hashtags               | populate_hashtags.py    
-          hashtagstweets         | populate_hashtagstweets.py    
-          likes                  | populate_likes.py    
-          retweets               | populate_retweets.py   
-          seguidors              | populate_seguidors.py    
-          tweets                 | populate_tweets.py    
-          usuaris                | populate_usuaris.py   
-          usuarislikescomentaris | populate_usuarislikescomentaris.py    
+           Table                  | Script
+           -----------------------|-------------------------------------------
+           comentaris             | populate_comentaris.py    
+           fotos                  | populate_fotos.py   
+           hashtags               | populate_hashtags.py    
+           hashtagstweets         | populate_hashtagstweets.py    
+           likes                  | populate_likes.py    
+           retweets               | populate_retweets.py   
+           seguidors              | populate_seguidors.py    
+           tweets                 | populate_tweets.py    
+           usuaris                | populate_usuaris.py   
+           usuarislikescomentaris | populate_usuarislikescomentaris.py    
 
 
         There are other tools that can populate data into Postgres database. 
