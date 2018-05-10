@@ -19,15 +19,39 @@ It's really important defining an ordered structure so that we can create cohere
 
 Over the past decade, many of the assumptions that drove the development of relational databases have changed:
 
-* Demands for higher developer productivity and faster time to market, compressing release cycles from months and years to days and weeks.
+* Demands for higher developer productivity and faster time to market.
 
 * The need to manage massive increases in new, rapidly changing data types.
 
-* The wholesale shift to distributed systems and cloud computing, enabling developers to exploit on-demand, 
-  highly scalable compute and storage infrastructure, with the ability to serve audiences any place they work and play around the globe.
+* Exploit on-demand, highly scalable compute and storage infrastructure, with the ability to serve audiences any place they work.
   
-As a result, non-relational or “NoSQL” databases, like MongoDB, have emerged in order to address the requirements of new applications, and modernize existing workloads. 
-  
+As a result, non-relational or “NoSQL” databases, like MongoDB, have appeared in order to address the requirements of new applications such as:
+
+* High scalability
+
+* Availability
+
+* Developer productivity
+
+
+### Concepts
+
+   Many concepts in PostgreSQL have analogs in MongoDB. The table below shows the common concepts.
+    
+   PostgreSQL    |    MongoDB
+   --------------------------------
+   Table         |   Collection
+   Row           |   Document
+   Column        |   Field
+   JOIN          |   Embedded documents
+   GROUP_BY      |   Aggregation Pipeline
+
+
+---
+
+## Installation
+
+Now it is explained how can we test both databases with more or less the same configuration.
 
 ## System specifications
 
@@ -122,7 +146,7 @@ As a superuser we have to run different commands in ordrer to install
   Auth-options | There can be field(s) of the form name=value that specify options for the authentication method. 
   
   
-  For the **auth-method** there are possible choices to consider:
+  For the **auth-method** there are possible choices to consider, here we see the ones used the most, but there are other [possibilities](https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html):
   
   
    Choice    |   Definition
@@ -131,14 +155,10 @@ As a superuser we have to run different commands in ordrer to install
    reject    | Reject the connection unconditionally.
    md5       | Require the client to supply an encrypted password for authentication. Is sent encrypted.
    password  | Require the client to supply an unencrypted password for authentication. Is sent in clear text.
-   gss       | Use GSSAPI to authenticate the user. 
-   sspi      | Use SSPI to authenticate the user. 
-   krb5      | Use Kerberos V5 to authenticate the user.
    ident     | Obtain the operating system user name of the client by contacting the ident server on the client and check if it matches the requested database user name. When specified for local connections, peer authentication will be used instead.
    peer      | Obtain the client's operating system user name from the operating system and check if it matches the requested database user name.
+   krb5      | Use Kerberos V5 to authenticate the user.
    ldap      | Authenticate using an LDAP server.
-   radius    | Authenticate using a RADIUS server.
-   cert      | Authenticate using SSL client certificates. 
    pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
   
   
@@ -280,7 +300,7 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 
     `-bash-4.3$ psql`
 
-* Once we have entered to Postgres, we can import the database structure using the script.
+* Once we have entered to Postgres, we can import the database structure using the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql).
 
     `postgres=# \i /tmp/twitterhashtags.sql;`
 
@@ -317,7 +337,7 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
   Here we see that for each table it is created a sequence, that means that 
   each single table has an _id_ field that is bigserial and this serial is
   a sequence of numbers starting at 1. 
-  We use this in order to maintain coherence on database.
+  We use this in order to maintain coherence on the database.
 
 
 * Finally we have to import all data in our tables so as to have a lot of information to process. 
@@ -390,6 +410,24 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 * Then we run the function
 
     `twitter=# SELECT update_tweets();`
+    
+
+In order to have access to the Postgres database with other users we need to add some roles.
+
+* First we import the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/privileges.sql) that grant access to our username.
+  Before importing that script, we should make changes.
+    
+    * Everywhere it says **YourUsername** change it with your username.
+    
+    * Change password with the one you want to use.
+  
+    * Now you are ready to import it.
+
+        `twitter=# \i /tmp/privileges.sql;`
+    
+* Then we run a different terminal and assure that it is true we can log into database with the **username** we put on the script by using:
+
+    `[user@host]$ psql -p 5432 -U username -d twitter`
 
 
 ##### Now we have finished creating Twitter database on Postgres. 
@@ -839,6 +877,36 @@ testing different queries to compare speed rates and the number of accesses.
 
 
 
+
+## Query attack 
+
+Once we have tested the query performance with only one query at the same 
+time and having dedicated all machine, we must try what would 
+happen if multiple queries are sent at the same time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Docker interface
 
 To test queries in Postgres and MongoDB interfaces I have created two different Dockers. 
@@ -853,7 +921,7 @@ Both of them include the entire twitter database.
     `[user@host ]$ docker run --name postgrestwitter -h postgrestwitter -d isx45128227/postgrestwitter`
 
 
-* Later we run our queries using psql (user password is **jupiter**). 
+* Later we run our queries using psql and user docker (user password is **jupiter**). 
   Check first the ip address of your docker, it could not be the same.
   You should wait a little bit until twitter database is ready (about 1 minute).
 
