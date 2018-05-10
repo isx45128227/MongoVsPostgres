@@ -194,16 +194,14 @@ First of all we need to add Mongo's repository to the machine.
 `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
 
 And we add the following lines:
-> [mongodb]
 
-> name=MongoDB Repository
-
-> baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-
-> gpgcheck=0
-
-> enabled=1
-
+```
+[mongodb]
+name=MongoDB Repository
+baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+gpgcheck=0
+enabled=1
+```
 
 Later we install the package:
 
@@ -301,7 +299,7 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 
     `-bash-4.3$ psql`
 
-* Once we have entered to Postgres, we can import the database structure using the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql).
+* Once we have entered to Postgres, we can import the database structure using the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql) from /tmp.
 
     `postgres=# \i /tmp/twitterhashtags.sql;`
 
@@ -426,7 +424,7 @@ In order to have access to the Postgres database with other users we need to add
 
         `twitter=# \i /tmp/privileges.sql;`
     
-* Then we run a different terminal and assure that it is true we can log into database with the **username** we put on the script by using:
+* Then we run a different terminal and ensure that it is true we can log into database with the **username** we put on the script by using:
 
     `[user@host]$ psql -p 5432 -U username -d twitter`
 
@@ -608,7 +606,7 @@ Once we have added all information to Twitter database we can start using it.
 
 * First of all we enter to MongoDB interface.
 
-    `[root@host ]# mongo`
+    `[user@host ]$ mongo`
 
 * Once we have entered to MongoDB, we have to choose the database we want to work with.
 
@@ -885,10 +883,60 @@ Once we have tested the query performance with only one query at the same
 time and having dedicated all machine, we must try what would 
 happen if multiple queries are sent at the same time.
 
+### Postgres
+
+To execute multiple queries at the same time we should send the psql command to the terminal.
+In order to do that process massively, it is more practical to create a script.
+
+The script I have prepared calls different sub_scripts that generate the calls to psql.
+You can find it in [Postgres/Atac](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/Atac/atac.sh).
+
+Before we execute the script and generate that big amount of calls to Postgres, we should configure the configuration file
+so that we can create logs of the different connections. It is really simple, you only need to follow this steps:
+
+* First of all we log in as a superuser in order to make changes to Postgres configuration file.
+
+    `[user@host ]$ su -`
+  
+* Then we edit the file located in _/var/lib/pgsql/data/_ that is called _postgresql.conf_.
+
+    `[root@host ]# vim /var/lib/pgsql/data/postgresql.conf`
+  
+* And we add the next lines.
+
+    ```
+    max_connections = 5000000
+    log_destination = 'stderr'
+    log_filename = 'postgresql-QUERIES.log' 
+    log_connections = on
+    log_duration = on
+    log_hostname = on
+    effective_cache_size = 1MB
+    ```
+    
+    Here we are telling Postgres to accept 5 million connections at the same time, 
+    the log filename, the information we want to see in the log (log_connection, 
+    log_duration and log_hostname) and the minimum cache possible 1MB.
+    
+* Now we have to restart the service so the changes are effective.
+  
+    `[root@host ]# systemctl restart postgresql`
 
 
+To execute that script, you should first change permissions to that file so it is executable.
+
+`[user@host ]$ chmod +x atac.sh`
+  
+Later you execute the script and see the results on Postgres log.
+
+`[user@host ]$ ./atac.sh`
+  
+To filter the result from the log and see only the time spent on each query we can do it as follows (**you must be root**):
+
+`[root@host ]# grep "ms  statement: SELECT" /var/lib/pgsql/data/pg_log/postgresql-QUERIES.log`
 
 
+### MongoDB
 
 
 
@@ -935,11 +983,11 @@ Both of them include the entire twitter database.
   
   If we want to override the password prompt, we must add into our home a file named **.pgpass** that contains the following line:
   
-    `172.17.0.2:5432:twitter:docker:jupiter`
+   `172.17.0.2:5432:twitter:docker:jupiter`
     
   And then change permissions to that file:
    
-    `chmod 0600 .pgpass`
+   `chmod 0600 .pgpass`
     
   Now we can execute queries without entering the password.
 
