@@ -189,23 +189,23 @@ As a superuser we have to run different commands in ordrer to install
 
 * Install MongoDB package.
 
-First of all we need to add Mongo's repository to the machine.
-
-`[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
-
-And we add the following lines:
-
-```
-[mongodb]
-name=MongoDB Repository
-baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-gpgcheck=0
-enabled=1
-```
-
-Later we install the package:
-
-`[root@host ]# dnf -y install mongodb-org mongodb-org-server`
+    First of all we need to add Mongo's repository to the machine.
+    
+    `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
+    
+    And we add the following lines:
+    
+    ```
+    [mongodb]
+    name=MongoDB Repository
+    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
+    gpgcheck=0
+    enabled=1
+    ```
+    
+    Later we install the package:
+    
+    `[root@host ]# dnf -y install mongodb-org mongodb-org-server`
 
 * Start MongoDB service.
 
@@ -224,23 +224,23 @@ The general format for this file is in [_YAML_](https://en.wikipedia.org/wiki/YA
 
 In this case, we can configure different options such as:
 
-* SystemLog,
+* [SystemLog](https://docs.mongodb.com/v2.6/reference/configuration-options/#core-options),
  
-* processManagement, 
+* [processManagement](https://docs.mongodb.com/v2.6/reference/configuration-options/#processmanagement-options), 
 
-* net, 
+* [net](https://docs.mongodb.com/v2.6/reference/configuration-options/#net-options), 
 
-* setParameter, 
+* [setParameter](https://docs.mongodb.com/v2.6/reference/configuration-options/#setparameter-option), 
 
-* security, 
+* [security](https://docs.mongodb.com/v2.6/reference/configuration-options/#security-options), 
 
-* operationProfiling, 
+* [operationProfiling](https://docs.mongodb.com/v2.6/reference/configuration-options/#operationprofiling-options), 
 
-* storage, 
+* [storage](https://docs.mongodb.com/v2.6/reference/configuration-options/#storage-options), 
 
-* replication and 
+* [replication](https://docs.mongodb.com/v2.6/reference/configuration-options/#replication-options) and 
 
-* auditLog options.
+* [auditLog options](https://docs.mongodb.com/v2.6/reference/configuration-options/#auditlog-options).
 
 For this project is used the default configuration file because 
 we use different functions to obtain extra data from queries. 
@@ -269,7 +269,7 @@ foreign keys (the _id_ of each table) in order to maintain the data coherence.
 
 The structure for **MongoDB** differs from Postgres because of the organization. 
 MongoDB use collections instead of tables, there is no need to create one 
-collection for each table used in Postgres so I've tried to maintain the same relations somehow.
+collection for each table used in Postgres so I have tried to maintain the same relations somehow.
 
 * Users 
 
@@ -299,7 +299,7 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 
     `-bash-4.3$ psql`
 
-* Once we have entered to Postgres, we can import the database structure using the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql) from /tmp.
+* Once we have entered to Postgres, we can import the database structure using the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql) from /tmp, for example.
 
     `postgres=# \i /tmp/twitterhashtags.sql;`
 
@@ -339,7 +339,7 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
   We use this in order to maintain coherence on the database.
 
 
-* Finally we have to import all data in our tables so as to have a lot of information to process. 
+* Later we have to import all data in our tables so as to have a lot of information to process. 
 
     I have created _Python_ scripts which generate lots of data to add to twitter database. 
     They are placed in [Postgres/Funcions populate](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Funcions%20populate). 
@@ -398,11 +398,11 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
         that works with lots of data, but in this case we use an easier method.
 
 
-##### With the structure followed, in table tweets we don't have hashtags if they are used in. 
-##### So in order to add the hashtag to the tweet, there is a function in PLPGSQL that adds the hashtag to each tweet.
-##### Once we have added all information to twitter database we should run this function. 
+With the structure followed, in table tweets we don't have the text used in hashtags if they are used in. 
+So in order to add the hashtag to the tweet, there is a function in PLPGSQL that adds the hashtag to each tweet.
+Once we have added all information to twitter database we should run this function. 
 
-* First of all we import the [function](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/funcio_plpgsql.sql) from /tmp.
+* First of all we import the [function](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/funcio_plpgsql.sql) from /tmp, for example.
 
     `twitter=# \i /tmp/funcio_plpgsql.sql;`
 
@@ -411,20 +411,20 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
     `twitter=# SELECT update_tweets();`
     
 
-In order to have access to the Postgres database with other users we need to add some roles.
+Finally, in order to have access to the Postgres database with other users we need to add some roles.
 
-* First we import the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/privileges.sql) that grant access to our username.
-  Before importing that script, we should make changes.
+* First we import the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/privileges.sql) that grant access to our username, but
+  before importing that script, we should make changes on it.
     
     * Everywhere it says **YourUsername** change it with your username.
     
     * Change password with the one you want to use.
   
-    * Now you are ready to import it.
+    * Now you are ready to import it from /tmp, for example.
 
         `twitter=# \i /tmp/privileges.sql;`
     
-* Then we run a different terminal and ensure that it is true we can log into database with the **username** we put on the script by using:
+* Then we run a different terminal and ensure that we can log into database with the **username** we put on the script by using:
 
     `[user@host]$ psql -p 5432 -U username -d twitter`
 
@@ -441,26 +441,28 @@ MongoDB use _json_ documents to order the information into collections.
 Postgres has different functions that can convert from Postgres language to _json_ files.
 The only thing we have to do is to execute that function and see the result.
 
-`twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
-           password,username,telefon,data_alta,descripcio,ciutat,url,idioma,
-           email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
-           (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE 
-           id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;`
-
-
-Result: `{"id_usuari":12592,
-          "nom":"pere",
-          "cognoms":"goñi",
-          "password":"pass12592",
-          "username":"pere_goñi_12592",
-          "telefon":"698543568",
-          "data_alta":"2018-04-23T09:29:00",
-          "descripcio":"usuari peregoñi",
-          "ciutat":"colonia",
-          "url":"https://www.twitter.com/pere_goñi12592",
-          "idioma":"castella",
-          "email":"peregoñi12592@gmail.com",
-          "seguidors":null }`
+  ```
+  twitter=# SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
+             password,username,telefon,data_alta,descripcio,ciutat,url,idioma,
+             email,(SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+             (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE 
+             id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users;
+  ```
+  ```
+  Result: {"id_usuari":12592,
+            "nom":"pere",
+            "cognoms":"goñi",
+            "password":"pass12592",
+            "username":"pere_goñi_12592",
+            "telefon":"698543568",
+            "data_alta":"2018-04-23T09:29:00",
+            "descripcio":"usuari peregoñi",
+            "ciutat":"colonia",
+            "url":"https://www.twitter.com/pere_goñi12592",
+            "idioma":"castella",
+            "email":"peregoñi12592@gmail.com",
+            "seguidors":null }
+  ```
 
 Here we are creating an output in _json_ format with all information about users and their followers.
 
@@ -482,27 +484,27 @@ We just need to add indexes in Postgres:
 
 * First of all we create index in **tweets** table
 
-    `twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
-    
-    `twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+    ```twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+       twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
+    ```
 
 * Secondly we create index in **comentaris** table
 
-    `twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
-    
-    `twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+    ```twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+       twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
+    ```
 
 * Thirdly  we create index in **likes** table
 
-    `twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
-    
-    `twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
+    ```twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+       twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
+    ```
     
 * Fourthly we create index in **usuarislikescomentaris** table
 
-    `twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
-    
-    `twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
+    ```twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
+       twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
+    ```
 
 * Fifthly we create index in **fotos** table
 
@@ -510,21 +512,21 @@ We just need to add indexes in Postgres:
 
 * Sixthly we create index in **retweets** table
 
-    `twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
-    
-    `twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
+    ```twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+       twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
+    ```
 
 * Seventhly we create index in **hashtagstweets** table
 
-    `twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
-    
-    `twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
+    ```twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+       twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
+    ```
 
 * Lastly we create index in **seguidors** table
 
-    `twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
-    
-    `twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+    ```twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+       twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
+    ```
 
 
 After adding the indexes we are ready to create _json_ files. 
@@ -533,7 +535,7 @@ We just need to follow the next steps:
 * Obtain users data and redirect the output to a file,
   so as to have all users information (user password is **jupiter**). 
 
-    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+    ```[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
     'SELECT row_to_json(users) FROM 
     (SELECT id_usuari,nom,cognoms,password,username,
        telefon,data_alta,descripcio,ciutat,url,idioma,email,
@@ -541,11 +543,12 @@ We just need to follow the next steps:
       (SELECT data_seguidor,id_usuari_seguidor 
        FROM seguidors WHERE id_usuari=id_usuari_seguit) 
       followers) as seguidors FROM usuaris) users 
-    ORDER BY users.id_usuari;' > /tmp/users.json`
+    ORDER BY users.id_usuari;' > /tmp/users.json
+   ```
 
 * Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
-    `[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+    ```[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
         'SELECT row_to_json(tweets) FROM 
         (SELECT id_tweet AS "_id",
         text_tweet,
@@ -568,16 +571,16 @@ We just need to follow the next steps:
         (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
         (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM 
           retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
-    FROM tweets) tweets;' > /tmp/tweets.json`
+    FROM tweets) tweets;' > /tmp/tweets.json
+    ```
 
 
-Function _row_to_json_ converts one row into _json_ document. 
+Function _row_to_json_ converts row into _json_ document. 
 That means that we can transform each row of our table in Postgres into 
 different documents in _json_ format. 
 
-Function _array_agg_ creates an array. In this case we use this function to 
-create different arrays of objects.
-
+Function _array_agg_ creates an array of objects. 
+In this case we use this function to create different arrays of objects such as hashtags, followers and photos.
 
 
 ### Database Twitter on MongoDB
@@ -669,35 +672,40 @@ testing different queries to compare speed rates and the number of accesses.
     
         #### Postgres
 
-        `twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
+        ```twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
         tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON 
         tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;`
-        
-        Result (only the first one): `Tweet 4947 de prova d'un usuari que
+        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        ```
+        ```
+        Result (only the first one): Tweet 4947 de prova d'un usuari que
         ha d'ocupar com a maxim 280 caracters per comparar Mongo amb Postgres. 
         que la seva ocupacio ha de ser com a maxim 280 caracters per 
-        comparar Mongo amb Postgres. #chip #variation`
+        comparar Mongo amb Postgres. #chip #variation
+        ```
         
         
         #### MongoDB
         
         `> db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0})`
         
+        ```
         Result (only the first one): `"text_tweet" : "Tweet 4947 de prova
         d'un usuari que ha d'ocupar com a maxim 280 caracters per comparar Mongo 
         amb Postgres. que la seva ocupacio ha de ser com a maxim 280 caracters 
-        per comparar Mongo amb Postgres. #chip #variation"`
+        per comparar Mongo amb Postgres. #chip #variation"
+        ```
         
         
     * We can obtain the cost by doing:
         
         #### Postgres
         
-        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
+        ```twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
         JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets
         ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        ```
             
         ![Postgres query1 Twitter](Postgres/imatges/query1.png)
 
@@ -717,7 +725,7 @@ testing different queries to compare speed rates and the number of accesses.
         the different actions taken, with the root and each -> pointing to one of them. 
         Each tree’s branches represent sub-actions, and you’d work inside-out to determine what’s happening first.
         
-        We can see that is using _id_usuari_ to join both tables. 
+        We can see different parts on the result: 
         
 
         
@@ -777,27 +785,27 @@ testing different queries to compare speed rates and the number of accesses.
         
             #### TWEETS
 
-            `twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);`
-            
-            `twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);`
+            ```twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+               twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
+            ```
             
             #### COMENTARIS 
             
-            `twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);`
-            
-            `twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);`
+            ```twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+               twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
+            ```
             
             #### LIKES
             
-            `twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);`
-            
-            `twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);`
+            ```twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+               twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
+            ```
             
             #### USUARISLIKESCOMENTARIS
             
-            `twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);`
-            
-            `twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);`
+            ```twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
+               twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
+            ```
             
             #### FOTOS
             
@@ -805,21 +813,21 @@ testing different queries to compare speed rates and the number of accesses.
             
             #### RETWEETS
             
-            `twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);`
-            
-            `twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);`
+            ```twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+               twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
+            ```
             
             #### HASHTAGSTWEETS
             
-            `twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);`
-            
-            `twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);`
+            ```twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+               twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
+            ```
             
             #### SEGUIDORS
             
-            `twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);`
-            
-            `twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);`
+            ```twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+               twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
+            ```
         
         
         #### MongoDB
@@ -840,10 +848,11 @@ testing different queries to compare speed rates and the number of accesses.
         
         We repeat the query to see the execution process.
         
-        `twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
+        ```twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
         JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets 
         ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;`
+        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        ```
          
         ![Postgres query2 Twitter](Postgres/imatges/query2.png)
         
@@ -881,7 +890,8 @@ testing different queries to compare speed rates and the number of accesses.
 
 Once we have tested the query performance with only one query at the same 
 time and having dedicated all machine, we must try what would 
-happen if multiple queries are sent at the same time.
+happen if multiple queries are sent at the same time so that we can analyze
+what results do we obtain if we implement and use this structure.
 
 ### Postgres
 
@@ -891,7 +901,7 @@ In order to do that process massively, it is more practical to create a script.
 The script I have prepared calls different sub_scripts that generate the calls to psql.
 You can find it in [Postgres/Atac](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/Atac/atac.sh).
 
-Before we execute the script and generate that big amount of calls to Postgres, we should configure the configuration file
+Before we execute the script and generate that big amount of calls to Postgres, we should make changes in the configuration file
 so that we can create logs of the different connections. It is really simple, you only need to follow this steps:
 
 * First of all we log in as a superuser in order to make changes to Postgres configuration file.
@@ -905,7 +915,6 @@ so that we can create logs of the different connections. It is really simple, yo
 * And we add the next lines.
 
     ```
-    max_connections = 5000000
     log_destination = 'stderr'
     log_filename = 'postgresql-QUERIES.log' 
     log_connections = on
@@ -914,9 +923,9 @@ so that we can create logs of the different connections. It is really simple, yo
     effective_cache_size = 1MB
     ```
     
-    Here we are telling Postgres to accept 5 million connections at the same time, 
-    the log filename, the information we want to see in the log (log_connection, 
-    log_duration and log_hostname) and the minimum cache possible 1MB.
+    Here we are telling Postgres the log filename, the information we want 
+    to see in the log (log_connection, log_duration and log_hostname) 
+    and the minimum cache possible 1MB.
     
 * Now we have to restart the service so the changes are effective.
   
@@ -938,14 +947,55 @@ To filter the result from the log and see only the time spent on each query we c
 
 ### MongoDB
 
+In MongoDB there is an option on the configuration file [systemLog](https://docs.mongodb.com/v2.6/reference/configuration-options/#systemlog-options)
+that can create a log, but we are interested in how much time spend our queries.
+So in order to know that amount of time we can create a function and call Mongo with [that function](https://github.com/isx45128227/MongoVsPostgres/blob/master/MongoDB/Atac/funcio_atac.js).
+
+```javascript
+function atac(query) {
+  var data_inicial = new Date();
+  var hora_inicial = data_inicial;
+  var result = db.tweets.find(query);
+  var usuari = tojson( result.next().id_usuari); 
+  printjson( usuari);
+  var info_usuari = db.users.find({"id_usuari":parseInt(usuari)});
+  var data_final = new Date();
+  var hora_final = data_final;
+  var total = data_final.getTime()-data_inicial.getTime();
+  printjson(data_inicial+' Total: '+total);
+}
+atac({"text_tweet":/#chip/},{"id_usuari":1});
+```
+
+Here we are obtaining the initial time, executing the query and then obtaining the final time.
+
+In order to do that process massively, it is more practical to create a script.
+
+The script I have prepared calls different sub_scripts that generate the calls to MongoDB.
+You can find it in [MongoDB/Atac](https://github.com/isx45128227/MongoVsPostgres/blob/master/MongoDB/Atac/atac.sh).
+
+
+To execute that script, you should first change permissions to that file so it is executable.
+
+`[user@host ]$ chmod +x atac.sh`
+  
+Later you execute the script and see the results on MongoDB log.
+
+`[user@host ]$ ./atac.sh`
+  
+To filter the result from the log and see only the time spent on each query we can do it as follows:
+
+`[user@host ]$ grep "Total:" /tmp/MongoDB.log`
+
+
+## Results
 
 
 
 
 
 
-
-
+## Conclusion
 
 
 
