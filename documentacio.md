@@ -941,6 +941,7 @@ so that we can create logs of the different connections. It is really simple, yo
 * And we add the next lines.
 
     ```
+    max_connections = 5000000
     log_destination = 'stderr'
     log_filename = 'postgresql-QUERIES.log' 
     log_connections = on
@@ -949,8 +950,9 @@ so that we can create logs of the different connections. It is really simple, yo
     effective_cache_size = 1MB
     ```
     
-    Here we are telling Postgres the log filename, the information we want 
-    to see in the log (log_connection, log_duration and log_hostname) 
+    Here we are telling Postgres the maximum number of connections,
+    the log filename, the information we want to see in the log 
+    (log_connection, log_duration and log_hostname) 
     and the minimum cache possible 1MB.
     
 * Now we have to restart the service so the changes are effective.
@@ -1016,8 +1018,59 @@ To filter the result from the log and see only the time spent on each query we c
 
 ## Results
 
+After executing both scripts in the interfaces, we see different results.
+
+In Postgres it started fine, but once we have lots of queries at the same time the machine starts to 
+slow its performance and to not accept more queries (running **four** attack scripts).
+
+If we see the log, we could observe that it took a lot of time to return the result of the query.
+
+Let's see what we obtained:
+
+```
+  [root@host ~]# grep "ms  statement: SELECT" /var/lib/pgsql/data/pg_log/postgresql-QUERIES.log
+  LOG:  duration: 5254.795 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 4939.950 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 4394.036 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 10630.883 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 25276.824 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet",
+  LOG:  duration: 36685.197 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 42724.796 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet",  
+  LOG:  duration: 57065.766 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 68555.185 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 78819.674 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 98548.459 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+  LOG:  duration: 101269.874 ms  statement: SELECT DISTINCT tweets.id_tweet AS "id_tweet", 
+```
+
+We also see that the whole system was slow and sometimes having delays in responding to some actions.
 
 
+On the other hand, MongoDB started nice and continued during all the time without 
+rejecting any query (running also **four** attack scripts). 
+
+Let's see what we obtained:
+
+```
+  [user@host ]$ grep "Total:" /tmp/MongoDB.log
+  "Fri May 11 2018 11:51:17 GMT+0200 (CEST) Total: 12004"
+  "Fri May 11 2018 11:51:19 GMT+0200 (CEST) Total: 13012"
+  "Fri May 11 2018 11:51:26 GMT+0200 (CEST) Total: 22371"
+  "Fri May 11 2018 11:51:27 GMT+0200 (CEST) Total: 35011"
+  "Fri May 11 2018 11:51:29 GMT+0200 (CEST) Total: 42758"
+  "Fri May 11 2018 11:51:32 GMT+0200 (CEST) Total: 60691"
+  "Fri May 11 2018 11:51:32 GMT+0200 (CEST) Total: 59861"
+  "Fri May 11 2018 11:51:33 GMT+0200 (CEST) Total: 60517"
+  "Fri May 11 2018 11:51:34 GMT+0200 (CEST) Total: 69880"
+  "Fri May 11 2018 11:51:39 GMT+0200 (CEST) Total: 71144"
+  "Fri May 11 2018 11:51:44 GMT+0200 (CEST) Total: 62391"
+```
+
+Initially, it started to send responses in about 12 seconds, 
+but later the time increases to 60 seconds (more or less).
+
+The most important thing is that MongoDB did not stop sending responses 
+and the system worked fine all the time without any delay.
 
 
 
