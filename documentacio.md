@@ -484,25 +484,29 @@ We just need to add indexes in Postgres:
 
 * First of all we create index in **tweets** table
 
-    ```twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+    ```
+       twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
        twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
     ```
 
 * Secondly we create index in **comentaris** table
 
-    ```twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+    ```
+       twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
        twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
     ```
 
 * Thirdly  we create index in **likes** table
 
-    ```twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+    ```
+       twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
        twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
     ```
     
 * Fourthly we create index in **usuarislikescomentaris** table
 
-    ```twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
+    ```
+       twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
        twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
     ```
 
@@ -512,19 +516,22 @@ We just need to add indexes in Postgres:
 
 * Sixthly we create index in **retweets** table
 
-    ```twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+    ```
+       twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
        twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
     ```
 
 * Seventhly we create index in **hashtagstweets** table
 
-    ```twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+    ```
+       twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
        twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
     ```
 
 * Lastly we create index in **seguidors** table
 
-    ```twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+    ```
+       twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
        twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
     ```
 
@@ -535,7 +542,8 @@ We just need to follow the next steps:
 * Obtain users data and redirect the output to a file,
   so as to have all users information (user password is **jupiter**). 
 
-    ```[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+    ```
+    [user@host ]$ psql -p 5432 -U postgres -d twitter -c 
     'SELECT row_to_json(users) FROM 
     (SELECT id_usuari,nom,cognoms,password,username,
        telefon,data_alta,descripcio,ciutat,url,idioma,email,
@@ -548,7 +556,8 @@ We just need to follow the next steps:
 
 * Obtain tweets data and redirect the output to a file, in order to have all tweets information (user password is **jupiter**). 
 
-    ```[user@host ]$ psql -p 5432 -U postgres -d twitter -c 
+    ```
+    [user@host ]$ psql -p 5432 -U postgres -d twitter -c 
         'SELECT row_to_json(tweets) FROM 
         (SELECT id_tweet AS "_id",
         text_tweet,
@@ -672,7 +681,8 @@ testing different queries to compare speed rates and the number of accesses.
     
         #### Postgres
 
-        ```twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
+        ```
+        twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
         tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON 
         tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
         LIKE '%#chip%' ORDER BY usuaris.telefon;
@@ -701,7 +711,8 @@ testing different queries to compare speed rates and the number of accesses.
         
         #### Postgres
         
-        ```twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
+        ```
+        twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
         JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets
         ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
         LIKE '%#chip%' ORDER BY usuaris.telefon;
@@ -785,25 +796,29 @@ testing different queries to compare speed rates and the number of accesses.
         
             #### TWEETS
 
-            ```twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+            ```
+               twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
                twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
             ```
             
             #### COMENTARIS 
             
-            ```twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+            ```
+               twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
                twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
             ```
             
             #### LIKES
             
-            ```twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+            ```
+               twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
                twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
             ```
             
             #### USUARISLIKESCOMENTARIS
             
-            ```twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
+            ```
+               twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
                twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
             ```
             
@@ -813,32 +828,35 @@ testing different queries to compare speed rates and the number of accesses.
             
             #### RETWEETS
             
-            ```twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+            ```
+               twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
                twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
             ```
             
             #### HASHTAGSTWEETS
             
-            ```twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+            ```
+               twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
                twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
             ```
             
             #### SEGUIDORS
             
-            ```twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+            ```
+               twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
                twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
             ```
         
         
         #### MongoDB
         
-           Now we add the Index in MongoDB. The syntax and their creation
-           differs from Postgres, but it has the same effect. 
-           
-           That index can search in MongoDB as it was Google Search.
-           To do it we should follow this step:
+        Now we add the Index in MongoDB. The syntax and their creation
+        differs from Postgres, but it has the same effect. 
+        
+        That index can search in MongoDB as it was Google Search.
+        To do it we should follow this step:
 
-           `> db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})`
+        `> db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})`
            
            
     * Once we have created the indexes on both interfaces we can repeat 
@@ -977,15 +995,15 @@ You can find it in [MongoDB/Atac](https://github.com/isx45128227/MongoVsPostgres
 
 To execute that script, you should first change permissions to that file so it is executable.
 
-`[user@host ]$ chmod +x atac.sh`
+   `[user@host ]$ chmod +x atac.sh`
   
 Later you execute the script and see the results on MongoDB log.
 
-`[user@host ]$ ./atac.sh`
+   `[user@host ]$ ./atac.sh`
   
 To filter the result from the log and see only the time spent on each query we can do it as follows:
 
-`[user@host ]$ grep "Total:" /tmp/MongoDB.log`
+   `[user@host ]$ grep "Total:" /tmp/MongoDB.log`
 
 
 ## Results
