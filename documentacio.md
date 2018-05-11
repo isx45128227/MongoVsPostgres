@@ -485,54 +485,54 @@ We just need to add indexes in Postgres:
 * First of all we create index in **tweets** table
 
     ```
-       twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
-       twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
+      twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+      twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
     ```
 
 * Secondly we create index in **comentaris** table
 
     ```
-       twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
-       twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
+      twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+      twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
     ```
 
 * Thirdly  we create index in **likes** table
 
     ```
-       twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
-       twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
+      twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+      twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
     ```
     
 * Fourthly we create index in **usuarislikescomentaris** table
 
     ```
-       twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
-       twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
+      twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
+      twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
     ```
 
 * Fifthly we create index in **fotos** table
 
-    `twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
+    ` twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
 
 * Sixthly we create index in **retweets** table
 
     ```
-       twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
-       twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
+      twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+      twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
     ```
 
 * Seventhly we create index in **hashtagstweets** table
 
     ```
-       twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
-       twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
+      twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+      twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
     ```
 
 * Lastly we create index in **seguidors** table
 
     ```
-       twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
-       twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
+      twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+      twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
     ```
 
 
@@ -547,10 +547,10 @@ We just need to follow the next steps:
     'SELECT row_to_json(users) FROM 
     (SELECT id_usuari,nom,cognoms,password,username,
        telefon,data_alta,descripcio,ciutat,url,idioma,email,
-    (SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
-      (SELECT data_seguidor,id_usuari_seguidor 
-       FROM seguidors WHERE id_usuari=id_usuari_seguit) 
-      followers) as seguidors FROM usuaris) users 
+       (SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+         (SELECT data_seguidor,id_usuari_seguidor FROM seguidors 
+          WHERE id_usuari=id_usuari_seguit) followers) as seguidors FROM 
+          usuaris) users 
     ORDER BY users.id_usuari;' > /tmp/users.json
    ```
 
@@ -559,28 +559,35 @@ We just need to follow the next steps:
     ```
     [user@host ]$ psql -p 5432 -U postgres -d twitter -c 
         'SELECT row_to_json(tweets) FROM 
-        (SELECT id_tweet AS "_id",
-        text_tweet,
-        id_usuari,
-        data_tweet,
-        (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM 
-          (SELECT data_foto,text_foto FROM fotos WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
-        (SELECT row_to_json(row(lat,lon))) AS "geo",
-        (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM 
-          (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
-          ON hashtags.id_hashtag=hashtagstweets.id_hashtag WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
-        (SELECT array_to_json(array_agg(row_to_json(likes))) FROM 
-          (SELECT id_usuari_like,data_like,esborrat FROM likes WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
-        (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM 
-          (SELECT id_usuari_comentari,data_comentari,text_comentari,(SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
-          (SELECT id_usuari FROM usuarislikescomentaris WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) likescomentari) as "likes_comentari" 
-          FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) comentaris) as comentaris,
-        (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
-        (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
-        (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
-        (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,text_retweet,esborrat FROM 
-          retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
-    FROM tweets) tweets;' > /tmp/tweets.json
+          (SELECT id_tweet AS "_id",
+           text_tweet,
+           id_usuari,
+           data_tweet,
+           (SELECT array_to_json(array_agg(row_to_json(fotos))) FROM 
+             (SELECT data_foto,text_foto FROM fotos 
+               WHERE tweets.id_tweet=fotos.id_tweet) fotos) as fotos,
+           (SELECT row_to_json(row(lat,lon))) AS "geo",
+           (SELECT array_to_json(array_agg(row_to_json(hashtags))) FROM 
+             (SELECT hashtag,data_creacio_hashtag FROM hashtags JOIN hashtagstweets 
+              ON hashtags.id_hashtag=hashtagstweets.id_hashtag 
+              WHERE tweets.id_tweet=hashtagstweets.id_tweet) hashtags) as hashtags,
+           (SELECT array_to_json(array_agg(row_to_json(likes))) FROM 
+             (SELECT id_usuari_like,data_like,esborrat FROM likes 
+              WHERE tweets.id_tweet=likes.id_tweet) likes) as likes,
+           (SELECT array_to_json(array_agg(row_to_json(comentaris))) FROM 
+             (SELECT id_usuari_comentari,data_comentari,text_comentari,
+               (SELECT array_to_json(array_agg(row_to_json(likescomentari))) FROM 
+                 (SELECT id_usuari FROM usuarislikescomentaris 
+                  WHERE comentaris.id_comentari=usuarislikescomentaris.id_comentari) 
+                  likescomentari) as "likes_comentari" 
+                 FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) 
+                 comentaris) as comentaris,
+           (SELECT count(*) FROM likes WHERE tweets.id_tweet=likes.id_tweet) AS "num_likes",
+           (SELECT count(*) FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) AS "num_retweets",
+           (SELECT count(*) FROM comentaris WHERE tweets.id_tweet=comentaris.id_tweet) AS "num_comments",
+           (SELECT array_to_json(array_agg(row_to_json(retweets))) FROM (SELECT id_usuari_retweet,data_retweet,
+            text_retweet,esborrat FROM retweets WHERE tweets.id_tweet=retweets.id_tweet) retweets) as retweets
+         FROM tweets) tweets;' > /tmp/tweets.json
     ```
 
 
@@ -797,54 +804,54 @@ testing different queries to compare speed rates and the number of accesses.
             #### TWEETS
 
             ```
-               twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
-               twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
+              twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
+              twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
             ```
             
             #### COMENTARIS 
             
             ```
-               twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
-               twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
+              twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
+              twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
             ```
             
             #### LIKES
             
             ```
-               twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
-               twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
+              twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
+              twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
             ```
             
             #### USUARISLIKESCOMENTARIS
             
             ```
-               twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
-               twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
+              twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
+              twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
             ```
             
             #### FOTOS
             
-            `twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
+            ` twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
             
             #### RETWEETS
             
             ```
-               twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
-               twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
+              twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
+              twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
             ```
             
             #### HASHTAGSTWEETS
             
             ```
-               twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
-               twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
+              twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
+              twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
             ```
             
             #### SEGUIDORS
             
             ```
-               twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
-               twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
+              twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
+              twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
             ```
         
         
@@ -866,10 +873,11 @@ testing different queries to compare speed rates and the number of accesses.
         
         We repeat the query to see the execution process.
         
-        ```twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
-        JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets 
-        ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        ```
+        twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
+                  JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets 
+                  ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
+                  LIKE '%#chip%' ORDER BY usuaris.telefon;
         ```
          
         ![Postgres query2 Twitter](Postgres/imatges/query2.png)
