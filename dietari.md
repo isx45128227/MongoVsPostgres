@@ -20,5 +20,11 @@ Dia | Objectius | Tasca realitzada | Hores
 08/05/2018 | Documentació i queries Postgres i Mongo. | Documentació. Cerca informació System Catalogs de Postgres. Prova consultes al diccionari de dades de Postgres. Consultes amb explainSelect a Mongo. | 4 hores.
 09/05/2018 | Cerca informació logs Postgres i Mongo. Documentació general Postgres i Mongo.  | Comprovació de dades errònies a mongo. Generació de scripts en bash per fer connexions massives al servidor de Postgres.  | 4 hores. 
 10/05/2018 | Informació MongoDB i Postgres. Solucionar problemes amb script atac Postgres.  | Problemes solucionats amb script atac Postgres. Més informació sobre Postgres i MongoDB. Explicació de creació de rol a Postgres. Atac a Postgres amb múltiples queries al mateix temps. |  6 hores.
+<<<<<<< HEAD
 11/05/2018 | Solucionar problemes inici Postgres. Comprovar que l'atac a Postgres es fa correctament. Documentació Postgres i MongoDB. Realitzar atac a MongoDB. Documentació atac a Postgres i a MongoDB. | Errors Postgres solucionat i atac correcte. Atac a MongoDB i documentació. |  4 hores.
 14/05/2018 | Analitzar queries lents Postgres. Documentar conclusions, manteniment ambdues BBDD. Fer més queries de prova. Comprovar atac a Docker. | Anàlisi queries lents a Postgres. Documentació conclusions. Creació MongoDB sense indexs. Atac a docker. Reinstal·lació MongoDB. |  4 hores.
+||||||| merged common ancestors
+11/05/2018 | Solucionar problemes inici Postgres. Comprovar que l'atac a Postgres es fa correctament.| Errors Postgres solucionat i atac correcte. |  4 hores.
+=======
+11/05/2018 | Solucionar problemes inici Postgres. Comprovar que l'atac a Postgres es fa correctament.| Errors Postgres solucionat i atac correcte. Creació atac MongoDB i atac a MongoDB. Documentació atac MongoDB i ajustament de l'estil de la documentació. |  4 hores.
+>>>>>>> 2b55a29b6999ba56bcd784e82fafae69300e8470
