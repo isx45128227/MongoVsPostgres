@@ -18,3 +18,8 @@ done
 # Per comprovar el log de Postgres podem buscar al fitxer de logs i veure la duracio dels queries:
 # grep "ms  statement: SELECT" /var/lib/pgsql/data/pg_log/postgresql-QUERIES.log
 
+# Veure número de respostes enviades:
+# grep "ms  statement: SELECT" /var/lib/pgsql/data/pg_log/postgresql-QUERIES.log | wc -l
+
+# Veure número de connexions:
+# grep "connection received: " /var/lib/pgsql/data/pg_log/postgresql-QUERIES.log | wc -l
