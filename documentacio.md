@@ -655,12 +655,14 @@ Here you can see basic queries in Postgres and their translation into MongoDB's 
 
 
 PostgreSQL                                                                                                        | MongoDB
-------------------------------------------------------------------------------------------------------------------|--------------
+------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------
 `CREATE TABLE tweets (id_tweet bigserial PRIMARY KEY,text_tweet varchar(280) NOT NULL,id_usuari bigint NOT NULL);`| Not Required
 `INSERT INTO tweets(id_tweet,text_tweet,id_usuari)VALUES (DEFAULT,'Example tweet',1);`                            | `db.tweets.insert({ id_tweet: 1, text_tweet:'Example tweet', id_usuari: 1 })`
 `SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
 `UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
 `DELETE FROM tweets WHERE id_tweet=3000;`                                                                         | `db.tweets.remove({ _id: 3000 })`
+`SELECT id_usuari,count(*) FROM tweets GROUP BY id_usuari ORDER BY id_usuari;`                                    | `db.tweets.aggregate([ { "$group": { "_id": "$id_usuari", "num": {"$sum":1}}},{"$project": {"_id": false, "id_usuari":"$_id", "numTweets": "$num"}},{"$sort": { "id_usuari": 1}}])`
+
 
 ---
 
@@ -692,7 +694,7 @@ testing different queries to compare speed rates and the number of accesses.
         twitter=# SELECT tweets.text_tweet FROM tweets JOIN usuaris ON 
         tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets ON 
         tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        LIKE '%#chip%';
         ```
         ```
         Result (only the first one): Tweet 4947 de prova d'un usuari que
@@ -719,10 +721,10 @@ testing different queries to compare speed rates and the number of accesses.
         #### Postgres
         
         ```
-        twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets .
+        twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
         JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets
         ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-        LIKE '%#chip%' ORDER BY usuaris.telefon;
+        LIKE '%#chip%';
         ```
             
         ![Postgres query1 Twitter](Postgres/imatges/query1.png)
@@ -743,10 +745,24 @@ testing different queries to compare speed rates and the number of accesses.
         the different actions taken, with the root and each -> pointing to one of them. 
         Each tree’s branches represent sub-actions, and you’d work inside-out to determine what’s happening first.
         
+        In this plan, we have a nested-loop join node with three table scans as inputs. 
+        The indentation of the node summary lines reflects the plan tree structure.
+        
         We can see different parts on the result: 
-        
+           
+           * Merge Join: shows the time spent on joining the different tables.
+           
+           * Merge Cond: shows the condition used by the join.
+           
+           * Index scan: shows indexs used during the search, in this case, only primary keys.
+           
+           * Rows removed: only appears when at least one scanned row, or potential join pair in the case of a join node, is rejected by the filter condition.
+           
+           * Sort: shows the sort method used (in particular, whether the sort was in-memory or on-disk) and the amount of memory or disk space needed.
+           
+        Finally, we see the planning time and the execution time. 
+        The most important one is the execution time, that is the one that reflects the whole time spent on making the query.
 
-        
         
         #### MongoDB
     
@@ -771,7 +787,7 @@ testing different queries to compare speed rates and the number of accesses.
           
 
     * How can we solve this? Just adding Indexs on both interfaces and 
-      seeing if they improve their performance.
+      see if they improve their performance.
     
         #### Postgres
         
@@ -877,17 +893,24 @@ testing different queries to compare speed rates and the number of accesses.
         twitter=# EXPLAIN ANALYZE SELECT tweets.text_tweet FROM tweets 
                   JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari JOIN hashtagstweets 
                   ON tweets.id_tweet=hashtagstweets.id_tweet WHERE text_tweet 
-                  LIKE '%#chip%' ORDER BY usuaris.telefon;
+                  LIKE '%#chip%';
         ```
          
         ![Postgres query2 Twitter](Postgres/imatges/query2.png)
         
+        In this case, we have two nested-loops. On the second one we see that is made a sequential scan
+        on tweets table, that is because there are many more rows to be visited in that table, so it is 
+        necessary to filter first. Then we see the number rows removed using this scan (with the filter condition)
+        and the indexes used to resolve the query as fast as Postgres can.
         
+        The new part seen on this plan is the _Heap Fetches_.
+        This is the number of visits that are projected to be needed by the planner goes up,
+        that means the number of results that match the condition.
         
+        Finally, we see the planning time and the final execution time.
+        This time is one second faster than the plan without indexes, so we can conclude that indexes help Postgres
+        to search faster.
         
-        
-
-       
         
         #### MongoDB
         
@@ -908,8 +931,6 @@ testing different queries to compare speed rates and the number of accesses.
 
         * _nscannedObjects_ displays 296 to indicate that MongoDB scanned 296 documents. 
           Again we reduced the number of objects scanned from 6 million to 296.
-
-
 
 
 ## Query attack 
@@ -941,7 +962,9 @@ so that we can create logs of the different connections. It is really simple, yo
 * And we add the next lines.
 
     ```
-    max_connections = 5000000
+    max_connections = 1000
+    shared_buffers=248MB
+    
     log_destination = 'stderr'
     log_filename = 'postgresql-QUERIES.log' 
     log_connections = on
@@ -950,10 +973,18 @@ so that we can create logs of the different connections. It is really simple, yo
     effective_cache_size = 1MB
     ```
     
-    Here we are telling Postgres the maximum number of connections,
+    Here we are telling Postgres the maximum number of connections allowed at the same time(1000),
+    the memory dedicated to postgresql to use for caching data(248MB),
     the log filename, the information we want to see in the log 
     (log_connection, log_duration and log_hostname) 
-    and the minimum cache possible 1MB.
+    and the minimum cache possible 1MB (in ordrer to execute the query each time).
+    
+    
+    * We would also have to edit /etc/sysctl.conf to increase kernel max size to be larger than shared_buffers.
+      Set the parameter as shown below.
+
+        `kernel.shmmax=100663296` 
+       
     
 * Now we have to restart the service so the changes are effective.
   
@@ -1076,19 +1107,40 @@ and the system worked fine all the time without any delay.
 
 ## Conclusion
 
+As seen on the results we can conclude that MongoDB was better than Postgres on the way it manages the 
+distribution of connections. Nevertheless, Postgres has better organization and managing the coherence 
+of data structure is easier.
+
+MongoDB’s selection over Postgres is driven by developer productivity, performance, and scalability.
+Before we start our project we should decide which is the better structure to use depending on the
+necessities we have.
+
+In addition, it is really important to think about the maintenance of the database, because focusing
+on that, it is absolutely different one from the other. 
+The main aspects we should consider are:
+
+* Postgres has primary and foreign keys to prevent repetitions. MongoDB can have repeated rows.
+
+* The structure followed is different.
+
+* Querying in MongoDB is not as simple as it is in Postgres.
+
+* The configuration of the logs is different.
 
 
+On the other hand we have to take a look at the efficiency. As we have tested, there is a difference
+between both interfaces, that does not mean that one have to be better than the other one. The fact
+is that we have to think which fits better with the project we are going to develop. 
 
-
-
-
+In that case, it would be a good idea to use MongoDB in projects or applications where it is necessary
+to have high-availability and scalability.
 
 
 
 ## Docker interface
 
 To test queries in Postgres and MongoDB interfaces I have created two different Dockers. 
-Both of them include the entire twitter database.
+Both of them include the entire twitter database without indexes.
 
 
 ### Postgres docker
