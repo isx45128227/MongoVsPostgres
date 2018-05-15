@@ -50,8 +50,6 @@ db.users.find({"id_usuari":parseInt(usuari)})
 
 
 
-
-
 var myCursor = db.users.find( {} );
 while ( myCursor.hasNext() ) {    printjson( myCursor.next().id_usuari); }
 
