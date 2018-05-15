@@ -1,7 +1,6 @@
 # @edt ASIX  Curs 2017-2018
 # Projecte MongoDB vs Postgres
-# postgres:base 
-# servidor postgres amb BBDD twitter
+# servidor Postgres amb BBDD twitter
 # ----------------------------------
 
 FROM postgres:9.3
