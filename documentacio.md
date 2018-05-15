@@ -970,13 +970,18 @@ so that we can create logs of the different connections. It is really simple, yo
     log_connections = on
     log_duration = on
     log_hostname = on
+    log_min_duration_statement = 0 
+      # 0 --> Logs all statements
+      # -1 --> Disabled logging
+      # > 0 --> Log only statements running at least this number of milliseconds.
+      
     effective_cache_size = 1MB
     ```
     
     Here we are telling Postgres the maximum number of connections allowed at the same time(1000),
     the memory dedicated to postgresql to use for caching data(248MB),
     the log filename, the information we want to see in the log 
-    (log_connection, log_duration and log_hostname) 
+    (log_connection, log_duration and log_hostname), what we want to log
     and the minimum cache possible 1MB (in ordrer to execute the query each time).
     
     
