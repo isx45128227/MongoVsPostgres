@@ -48,27 +48,6 @@ var usuari = tojson( result.next().id_usuari);
 db.users.find({"id_usuari":parseInt(usuari)})
 
 
-// Find num usuaris que el segueixen 
-
-db.users.aggregate([
-					  {
-						  "$group": {
-							   "_id": {"_id":"$id_usuari"},
-							   "num_seguidors": {"$sum": 1}
-						   }
-					  },
-					  {
-						  "$project": {
-							   "_id":false,
-							   "id_usuari": "$_id",
-							   "num_seguidors":"$num_seguidors"
-						   }
-					  }
-])
-
-
-// Find usuaris a qui segueix
-
 
 
 
