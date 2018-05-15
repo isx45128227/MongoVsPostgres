@@ -750,15 +750,15 @@ testing different queries to compare speed rates and the number of accesses.
         
         We can see different parts on the result: 
            
-           * Merge Join: shows the time spent on joining the different tables.
-           
-           * Merge Cond: shows the condition used by the join.
-           
-           * Index scan: shows indexs used during the search, in this case, only primary keys.
-           
-           * Rows removed: only appears when at least one scanned row, or potential join pair in the case of a join node, is rejected by the filter condition.
-           
-           * Sort: shows the sort method used (in particular, whether the sort was in-memory or on-disk) and the amount of memory or disk space needed.
+        * Merge Join: shows the time spent on joining the different tables.
+        
+        * Merge Cond: shows the condition used by the join.
+        
+        * Index scan: shows indexs used during the search, in this case, only primary keys.
+        
+        * Rows removed: only appears when at least one scanned row, or potential join pair in the case of a join node, is rejected by the filter condition.
+        
+        * Sort: shows the sort method used (in particular, whether the sort was in-memory or on-disk) and the amount of memory or disk space needed.
            
         Finally, we see the planning time and the execution time. 
         The most important one is the execution time, that is the one that reflects the whole time spent on making the query.
@@ -1130,10 +1130,10 @@ The main aspects we should consider are:
 
 On the other hand we have to take a look at the efficiency. As we have tested, there is a difference
 between both interfaces, that does not mean that one have to be better than the other one. The fact
-is that we have to think which fits better with the project we are going to develop. 
+is that we have to think which fits better with the project we are developing. 
 
-In that case, it would be a good idea to use MongoDB in projects or applications where it is necessary
-to have high-availability and scalability.
+To sum up, it would be a good idea to use MongoDB in projects or applications where it is necessary
+to have high-availability and scalability. 
 
 
 
