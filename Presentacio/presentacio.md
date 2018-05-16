@@ -17,30 +17,12 @@
 * Postgres
 
 PostgreSQL és una eina _open source_ que permet gestionar bases de dades relacionals.
-Les bases de dades relacionals són aquelles que es construeixen amb una estructura específica i que cada taula i camp creat ha de tenir coherència amb la resta de dades.
-
-És important definir una bona estructura per tal de 
 
 
 * MongoDB
 
 MongoDB també és una eina _opensource_ per gestionar bases de dades, tot i que en aquest cas no són relacionals.
-Això ens permet crear esquemes dinàmics, àgils i escalables sense haver de fer grans canvis quan es volen introduir nous elements. Per tant, a diferència de Postgres no s'ha de realitzar una estructura prèvia.
-
-Durant els últims anys hi ha hagut canvis que han fet que s'hagi hagut de variar la manera en com desenvolupem les bases de dades:
-
-* Grans demandes de productivitat i temps de resposta immediat.
-
-* Necessitat de manejar grans canvis en el tipus de dades que s'utilitzen.
-
-* Estructura escalable i amb la capacitat de servir grans audiències amb independència del lloc de treball.
-
-Com a resultat, les bades de dades no relacionals o "NoSQL" com MongoDB han aparegut per tal d'adequar-se a les noves necessitats, com ara:
-
-* Escalabilitat.
-
-* Alta disponibilitat.
-
+Això ens permet crear esquemes dinàmics, àgils i escalables.
 
 ---
 
@@ -48,19 +30,18 @@ Com a resultat, les bades de dades no relacionals o "NoSQL" com MongoDB han apar
 
 * Explicació estructura en Postgres.
 
-![Postgres Twitter Structure](Postgres/imatges/twitter.png)
+![Postgres Twitter Structure](/MongovSPostgres/Postgres/imatges/twitter.png)
  
 * Explicació estructura en MongoDB.
 
-![Mongo tweets Twitter Structure](MongoDB/imatges/tweets1.png)
-![Mongo tweets Twitter Structure](MongoDB/imatges/tweets2.png)
+![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets1.png)
+![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets2.png)
  
  
 * Explicació populació de dades
   [Postgres](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Funcions%20populate)
  
 * Explicació pas dades de Postgres a MongoDB (funció row_to_json) 
-  (explicar problema amb temps i creació necessària d'indexs). (AMB EXEMPLE)
  
 * Explicació diferència queries (La manera en com es fan db.find vs SELECT).
 
