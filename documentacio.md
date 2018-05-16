@@ -52,12 +52,12 @@ As a result, non-relational or “NoSQL” databases, like MongoDB, have appeare
 
 ## Installation
 
-Now it is explained how can we test both databases with more or less the same configuration.
+Now it is explained how can we test both interfaces with more or less the same configuration in our system.
 
 ## System specifications
 
 This project has been made in Linux Fedora 24.
-The main details of my Fedora machine:
+The main details of my Fedora machine are:
 
 * Processor: Intel Core (TM) i7-6700 CPU @ 3.40GHz
 * RAM: 16 GB
@@ -76,16 +76,16 @@ To do it we should first install **Postgres** and **MongoDB** in our system.
 
 ### Postgres installation
 
-To install Postgres in the system we should follow the [_HowToPostgres_](https://github.com/isx45128227/MongoVsPostgres/HowToInstallPostgres.md) created.
+To install Postgres in the system we should follow the [_HowToPostgres_](https://github.com/isx45128227/MongoVsPostgres/blob/master/HowToInstallPostgres.md#postgres-installation) created.
   
 Once we have finished installing Postgres we need to continue installing MongoDB.
   
 ### MongoDB installation
 
-To install MongoDB in the system we should follow the [_HowToMongoDB_](https://github.com/isx45128227/MongoVsPostgres/HowToInstallPostgres.md) created.
+To install MongoDB in the system we should follow the [_HowToMongoDB_](https://github.com/isx45128227/MongoVsPostgres/blob/master/HowToInstallMongoDB.md#mongodb-installation) created.
 
 
-#### Now we have both interfaces installed in our system so in order to have data to process, we should create a database.
+#### Now we have both interfaces installed in our system, so in order to have data to process, we should create a database.
 
 ---
 
@@ -101,7 +101,62 @@ The structure I have chosen for **Postgres** is:
 
 
 This structure contains different tables and they are connected by using 
-foreign keys (the _id_ of each table) in order to maintain the data coherence. 
+foreign keys (the _id_ of each table) in order to maintain the data coherence.
+
+This coherence is important because we want to keep coherent data without repetitions.
+The tables are connected as follows:
+
+* Table **tweets** is connected with:
+
+    * Usuaris to link each tweet with the owner.
+    
+    * Fotos to link each tweet with the pics it could have.
+    
+    
+* Table **retweets** is connected with:
+
+    * Usuaris to link each retweet with the owner.
+    
+    * Tweets to link each retweet with the tweet.
+
+
+* Table **fotos** is connected with:
+
+    * Tweets to link each pic with the tweet.
+
+
+* Table **likes** is connected with:
+
+    * Tweets to link each like with the tweet.
+    
+    * Usuaris to link each like with the owner.
+
+
+* Table **comentaris** is connected with:
+    
+    * Usuaris to link each comment with the owner.
+    
+    * Tweets to link each comment with the tweet.
+    
+    
+* Table **usuarislikescomentaris** is connected with:
+
+    * Usuaris to link each comment like with the owner.
+    
+    * Comentaris to link each comment like with the comment.
+
+
+* Table **hashtagstweets** is connected with:
+
+    * Tweets to link each hashtag ID with the tweet.
+    
+    * Hashtags to link each hashtag ID with the hashtag.
+
+
+* Table **seguidors** is connected with:
+
+    * Usuaris to link each follower with the user it follows.
+    
 
 
 The structure for **MongoDB** differs from Postgres because of the organization. 
@@ -125,7 +180,7 @@ Once we have defined the structure we are going to use, we can start creating th
 ### Database Twitter on Postgres
 
 It is created a script that includes Twitter database, so the only thing
-we have to do is to import [that script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/twitterhashtags.sql).
+we have to do is to import that script.
 
 
 * First of all we init session in postgres.
@@ -236,7 +291,8 @@ we have to do is to import [that script](https://github.com/isx45128227/MongoVsP
 
 
 With the structure followed, in table tweets we don't have the text used in hashtags if they are used in. 
-So in order to add the hashtag to the tweet, there is a function in PLPGSQL that adds the hashtag to each tweet.
+So in order to add the hashtag to the tweet so we can **search in tweets table directly**, 
+there is a function in PLPGSQL that adds the hashtag to each tweet.
 Once we have added all information to twitter database we should run this function. 
 
 * First of all we import the [function](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/funcio_plpgsql.sql) from /tmp, for example.
@@ -251,7 +307,7 @@ Once we have added all information to twitter database we should run this functi
 Finally, in order to have access to the Postgres database with other users we need to add some roles.
 
 * First we import the [script](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/privileges.sql) that grant access to our username, but
-  before importing that script, we should make changes on it.
+  before importing that script, we should **make changes** on it.
     
     * Everywhere it says **YourUsername** change it with your username.
     
@@ -492,8 +548,7 @@ Once we have added all information to Twitter database we can start using it.
 
 As I said at the very beginning of this project syntax in MongoDB differs from Postgres.
 
-Here you can see basic queries in Postgres and their translation into MongoDB's syntax.
-
+Here you can see basic CRUD queries in Postgres and their translation into MongoDB's syntax.
 
 PostgreSQL                                                                                                        | MongoDB
 ------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------
