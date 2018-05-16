@@ -76,176 +76,13 @@ To do it we should first install **Postgres** and **MongoDB** in our system.
 
 ### Postgres installation
 
-As a superuser we have to run different commands in ordrer to install 
-**Postgres** in our system:
-
-* Install Postgres package.
-
-    `[root@host ]# dnf -y install postgresql-server`
-
-* Init Postgres.
-
-    `[root@host ]# postgresql-setup initdb`
-
-* Start service.
-
-    `[root@host ]# systemctl start postgresql`
-
-* Enable service.
-
-    `[root@host ]# systemctl enable postgresql`
-
-* Set password to user postgres (we could use **jupiter** for example).
-
-    `[root@host ]# passwd postgres`
-    
-    
-* There is a configuration file placed in _/var/lib/pgsql/data/_ that is 
-  named [_pg_hba.conf_](https://www.postgresql.org/docs/9.3/static/auth-pg-hba-conf.html) 
-  where we can change different parameters of the client 
-  authentication (HBA stands for host-based authentication).
+To install Postgres in the system we should follow the [_HowToPostgres_](https://github.com/isx45128227/MongoVsPostgres/HowToInstallPostgres.md) created.
   
-  The general format for this file is a set of records where each record 
-  specifies:
-      
-   * A connection type, 
-   
-   * A client IP address range,
-   
-   * A database name,
-   
-   * A user name and
-   
-   * The authentication method to be used for connection matching this parameters.
-  
-  If one record is chosen and the authentication fails, subsequent records 
-  are not considered.
-  
-  If no record matches, access is denied. 
-  
-  Before explaining the divergences between the options we use, we should 
-  differenciate 4 different **types** of connection:
-  
-   * **Local**: This option matches connection attempts using Unix-domain sockets. 
-   
-   * **Host**: This option matches connection attempts using TCP/IP, the most commonly used.
-   
-   * **Hostssl**: This option matches connection attempts made using TCP/IP 
-                  but only when the connection is made with SSL encryption.
-                  
-   * **Hostnossl**: This option has the opposite behaviour of hostssl. 
-  
-  Here we will see the most commonly used **options** and their meaning. 
-  
-  
-  Option       |    Usage
-  -------------|-------------------------------------------------------------------------------------------------------
-  Database     | Specifies the db name. Value all specifies that it matches all databases.
-  User         | Specifies which database user name this record matches. Value all specifies that it matches all users.
-  Address      | Specifies the client machine address(es) that this record matches.
-  Auth-method  | Specifies the authentication method to use when a connection matches this record.
-  Auth-options | There can be field(s) of the form name=value that specify options for the authentication method. 
-  
-  
-  For the **auth-method** there are possible choices to consider, here we see the ones used the most, but there are other [possibilities](https://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html):
-  
-  
-   Choice    |   Definition
-   ----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-   trust     | Allow the connection unconditionally.
-   reject    | Reject the connection unconditionally.
-   md5       | Require the client to supply an encrypted password for authentication. Is sent encrypted.
-   password  | Require the client to supply an unencrypted password for authentication. Is sent in clear text.
-   ident     | Obtain the operating system user name of the client by contacting the ident server on the client and check if it matches the requested database user name. When specified for local connections, peer authentication will be used instead.
-   peer      | Obtain the client's operating system user name from the operating system and check if it matches the requested database user name.
-   krb5      | Use Kerberos V5 to authenticate the user.
-   ldap      | Authenticate using an LDAP server.
-   pam       | Authenticate using the Pluggable Authentication Modules (PAM) service provided by the operating system. 
-  
-  
-   There are lots of possible configurations, but here you will see simple examples we use the most.
-   
-   * Allow local users to enter without authentication
-       
-       `local   all             all                                     trust`
-   
-   * Allow any user from any host with IP address 192.168.93.x to connect
-     to database "postgres" as the same user name that ident reports for
-     the connection.
-     
-       `host    postgres        all             192.168.93.0/24         ident`
-   
-   * Allow any user from hosts in the example.com domain to connect to
-     any database if the user's password is correctly supplied.
-     
-       `host    all             all             .example.com            md5`
-  
-  
+Once we have finished installing Postgres we need to continue installing MongoDB.
   
 ### MongoDB installation
 
-As a superuser we have to run different commands in ordrer to install 
-**MongoDB** in the system:
-
-* Install MongoDB package.
-
-    First of all we need to add Mongo's repository to the machine.
-    
-    `[root@host ]# vim /etc/yum.repos.d/mongodb.repo`
-    
-    And we add the following lines:
-    
-    ```
-    [mongodb]
-    name=MongoDB Repository
-    baseurl=http://downloads-distro.mongodb.org/repo/redhat/os/x86_64/
-    gpgcheck=0
-    enabled=1
-    ```
-    
-    Later we install the package:
-    
-    `[root@host ]# dnf -y install mongodb-org mongodb-org-server`
-
-* Start MongoDB service.
-
-    `[root@host ]# systemctl start mongod`
-
-* Enable MongoDB service.
-
-    `[root@host ]# systemctl enable mongod`
-    
-    
-There is a possibility of creating a configuration file for mongod instance at startup.
-That file contains settings that are equivalent to mongod command-line options. 
-Using it, makes managing options easier. 
-
-The general format for this file is in [_YAML_](https://en.wikipedia.org/wiki/YAML) language.
-
-In this case, we can configure different options such as:
-
-* [SystemLog](https://docs.mongodb.com/v2.6/reference/configuration-options/#core-options),
- 
-* [processManagement](https://docs.mongodb.com/v2.6/reference/configuration-options/#processmanagement-options), 
-
-* [net](https://docs.mongodb.com/v2.6/reference/configuration-options/#net-options), 
-
-* [setParameter](https://docs.mongodb.com/v2.6/reference/configuration-options/#setparameter-option), 
-
-* [security](https://docs.mongodb.com/v2.6/reference/configuration-options/#security-options), 
-
-* [operationProfiling](https://docs.mongodb.com/v2.6/reference/configuration-options/#operationprofiling-options), 
-
-* [storage](https://docs.mongodb.com/v2.6/reference/configuration-options/#storage-options), 
-
-* [replication](https://docs.mongodb.com/v2.6/reference/configuration-options/#replication-options) and 
-
-* [auditLog options](https://docs.mongodb.com/v2.6/reference/configuration-options/#auditlog-options).
-
-For this project is used the default configuration file because 
-we use different functions to obtain extra data from queries. 
-But if you are interested in knowing the different options to use,
-you can visit the [official website](https://docs.mongodb.com/v2.6/reference/configuration-options/). 
+To install MongoDB in the system we should follow the [_HowToMongoDB_](https://github.com/isx45128227/MongoVsPostgres/HowToInstallPostgres.md) created.
 
 
 #### Now we have both interfaces installed in our system so in order to have data to process, we should create a database.
@@ -634,6 +471,10 @@ Once we have added all information to Twitter database we can start using it.
 * Later we can see the different collections by using
     
     `> show collections`
+    
+* Other way to connect with mongo is specifying the database we want to connect with in the command line.
+
+    `[user@host ]$ mongo twitter`
 
 * To select collections we want to work with we should specify in the find sentence.
 
@@ -762,6 +603,8 @@ testing different queries to compare speed rates and the number of accesses.
            
         Finally, we see the planning time and the execution time. 
         The most important one is the execution time, that is the one that reflects the whole time spent on making the query.
+        
+        
 
         
         #### MongoDB
@@ -931,6 +774,34 @@ testing different queries to compare speed rates and the number of accesses.
 
         * _nscannedObjects_ displays 296 to indicate that MongoDB scanned 296 documents. 
           Again we reduced the number of objects scanned from 6 million to 296.
+          
+          
+        There is also a possibility of querying JOINS in MongoDB. If we want to reproduce the query made in Postgres
+        we just need to create a function in javascript. It is simple, we have to do the first query in one collection
+        and then obtain the rest from the other collection using a cursor. Let's see an example:
+        
+        ```javascript
+        function join_tweets_usuaris(query) {
+        var result = db.tweets.find(query);
+        var sortida = '';
+        while ( result.hasNext()) {
+           var usuari = tojson (result.next().id_usuari);
+           var info_usuari = db.users.find({"id_usuari":parseInt(usuari)});
+           var dades_usuari = info_usuari.next();
+           if (dades_usuari.seguidors){
+              sortida = sortida + " | " + usuari+" "+dades_usuari.nom + " " + dades_usuari.seguidors.length;
+           }
+           else
+           {
+              sortida = sortida + " | " + usuari+" "+dades_usuari.nom + "  0";
+           }
+           
+        }
+        printjson(sortida);
+        }
+       ```
+       
+       
 
 
 ## Query attack 
@@ -970,7 +841,7 @@ so that we can create logs of the different connections. It is really simple, yo
     log_connections = on
     log_duration = on
     log_hostname = on
-    log_min_duration_statement = 0 
+    log_min_duration_statement = 3000
       # 0 --> Logs all statements
       # -1 --> Disabled logging
       # > 0 --> Log only statements running at least this number of milliseconds.
@@ -981,7 +852,7 @@ so that we can create logs of the different connections. It is really simple, yo
     Here we are telling Postgres the maximum number of connections allowed at the same time(1000),
     the memory dedicated to postgresql to use for caching data(248MB),
     the log filename, the information we want to see in the log 
-    (log_connection, log_duration and log_hostname), what we want to log
+    (log_connection, log_duration and log_hostname), what we want to log (queries longer than 3 seconds)
     and the minimum cache possible 1MB (in ordrer to execute the query each time).
     
     
@@ -1020,12 +891,13 @@ function atac(query) {
   var data_inicial = new Date();
   var hora_inicial = data_inicial;
   var result = db.tweets.find(query);
-  var usuari = tojson( result.next().id_usuari); 
-  printjson( usuari);
-  var info_usuari = db.users.find({"id_usuari":parseInt(usuari)});
-  var data_final = new Date();
-  var hora_final = data_final;
-  var total = data_final.getTime()-data_inicial.getTime();
+  while ( result.hasNext()) {
+     var usuari = tojson (result.next().id_usuari);
+     printjson (usuari);   
+     var data_final = new Date();
+     var hora_final = data_final;
+     var total = data_final.getTime()-data_inicial.getTime();
+     }
   printjson(data_inicial+' Total: '+total);
 }
 atac({"text_tweet":/#chip/},{"id_usuari":1});
