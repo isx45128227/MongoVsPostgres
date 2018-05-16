@@ -9,10 +9,7 @@ function atac(query) {
     
      var usuari = tojson (result.next().id_usuari);
      printjson (usuari);
-     var info_usuari = db.users.find({"id_usuari":parseInt(usuari)});
-     
-     //printjson (info_usuari);
-      
+          
      var data_final = new Date();
      var hora_final = data_final;
      
