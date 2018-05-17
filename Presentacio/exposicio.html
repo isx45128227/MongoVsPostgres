@@ -12,7 +12,7 @@
 <section>
     <h1>RDBMS vs NoSQL</h1>
     <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Presentacio/mongovspostgres.jpg">
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Presentacio/mongovspostgres.jpg" width="100%" height="50%">
     </figure>
     <footer>by Roger Ferran Aranguren</footer>
 </section>
@@ -22,11 +22,10 @@
 <section>
     <h3>Objectius</h3>
     <ul>
-      <li class="next"> Donar a conèixer les bases de dades no relacionals.
-      <li class="next"> Diferències d'ús entre les BBDD relacionals i les no relacionals.
-      <li class="next"> Mostrar la sintaxi utilitzada en ambdues interfícies.
-      <li class="next"> Exemples d'ús en entorn "real".
-    </li>
+      <li class="next"> Donar a conèixer les bases de dades no relacionals.</li>
+      <li class="next"> Diferències d'ús entre les BBDD relacionals i les no relacionals.</li>
+      <li class="next"> Mostrar la sintaxi utilitzada en ambdues interfícies.</li>
+      <li class="next"> Exemples d'ús en entorn "real".</li>
     </ul>
 </section>
 
@@ -35,10 +34,9 @@
 <section>
     <h3>Introducció a MongoDB i PostgreSQL</h3>
     <ul>
-    <li class="next"> PostgreSQL
+    <li class="next"> PostgreSQL</li>
     </ul>
-    <p class="next"> Eina <strong>open source</strong> que permet gestionar bases de dades relacionals.
-    </p>
+    <p class="next"> Eina <strong>open source</strong> que permet gestionar bases de dades relacionals.</p>
 </section>
 
 
@@ -46,10 +44,9 @@
 <section>
     <h3>Introducció a MongoDB i PostgreSQL</h3>
     <ul>
-    <li class="next"> MongoDB
+       <li class="next"> MongoDB</li>
     </ul>
-    <p class="next"> També és <strong>open source</strong> però gestiona bases de dades no relacionals.
-    </p>
+    <p class="next"> També és <strong>open source</strong> però gestiona bases de dades no relacionals.</p>
 </section>
 
 
@@ -69,18 +66,18 @@
 
 <!-- Slide 7 -->
 <section>
-    <p class="next"> Scripts en Python </p>
+    <p> Scripts en Python </p>
     <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Postgres/imatges/python.jpg">
 </section>
 
 
-<!-- Slide 7 -->
+<!-- Slide 8 -->
 <section>
     <h3>Construcció de la BBDD</h3>
     <p class="next"> Estructura en MongoDB </p>
 </section>
 
-<!-- Slide 8 -->
+<!-- Slide 9 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
       <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets1.png">
@@ -88,7 +85,7 @@
 </section>
 
 
-<!-- Slide 9 -->
+<!-- Slide 10 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
       <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets2.png" >
@@ -96,7 +93,7 @@
 </section>
 
 
-<!-- Slide 10 -->
+<!-- Slide 11 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
       <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/users.png">
@@ -104,7 +101,7 @@
 </section>
 
 
-<!-- Slide 11 -->
+<!-- Slide 12 -->
 <section>
     <h3>Construcció de la BBDD</h3>
     <blockquote> SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
@@ -120,105 +117,112 @@
 
 
 
-<!-- Slide 12 -->
+<!-- Slide 13 -->
 <section>
     <h3>Queries lents</h3>
     <ul>
-    <li> PostgreSQL
-    <ul>
-      <li class="next">JOINS</li>
-    </ul>
-    <li> MongoDB
+      <li class="next"> PostgreSQL</li>
+        <ul>
+          <li class="next">JOINS</li>
+        </ul>
+      <li class="next"> MongoDB</li>
+        <ul>
+          <li class="next">Funcions</li>
+        </ul>
     </ul>
 </section>
 
-
-<!-- Slide 13 -->
-<section>
-    <h3>Ús en entorn real</h3>
-    <ul>
-    <li class="next"> Scripts en bash
-    <li class="next"> Enregistrament de logs
-    </ul>
-</section>
 
 <!-- Slide 14 -->
 <section>
     <h3>Ús en entorn real</h3>
     <ul>
-    <li class="next"> Logs a PostgreSQL
-    
-    <blockquote>
-    max_connections = 1000
-    shared_buffers=248MB
-    
-    log_destination = 'stderr'
-    log_filename = 'postgresql-QUERIES.log' 
-    log_connections = on
-    log_duration = on
-    log_hostname = on
-    log_min_duration_statement = 3000
-      
-    effective_cache_size = 1MB
-    </blockquote>
+      <li class="next"> Scripts en bash</li>
+      <li class="next"> Enregistrament de logs</li>
+      <ul>
+        <li class="next">PostgreSQL</li>
+        <li class="next">MongoDB</li>
+      </ul>
     </ul>
 </section>
-
 
 <!-- Slide 15 -->
 <section>
     <h3>Ús en entorn real</h3>
     <ul>
-    <li class="next"> Logs a MongoDB
-     <blockquote>
-     function atac(query) {
-     var data_inicial = new Date();
-     var hora_inicial = data_inicial;
-     var result = db.tweets.find(query);
-     while ( result.hasNext()) {
-        var usuari = tojson (result.next().id_usuari);
-        printjson (usuari);   
-        var data_final = new Date();
-        var hora_final = data_final;
-        var total = data_final.getTime()-data_inicial.getTime();
-        }
-     printjson(data_inicial+' Total: '+total);
-     }
-     atac({"text_tweet":/#chip/},{"id_usuari":1});
-     </blockquote>
-     </ul>
+    <li class="next"> Logs a PostgreSQL</li>
+    
+    <blockquote class="next">
+     max_connections = 1000
+     shared_buffers=248MB
+     
+     log_destination = 'stderr'
+     log_filename = 'postgresql-QUERIES.log' 
+     log_connections = on
+     log_duration = on
+     log_hostname = on
+     log_min_duration_statement = 3000
+       
+     effective_cache_size = 1MB
+    </blockquote>
+    </ul>
 </section>
 
 
 <!-- Slide 16 -->
 <section>
-    <h3>Atac</h3>
+    <h3>Ús en entorn real</h3>
     <ul>
-    <li class="next"> Construcció dels queries idèntics per atacar.
-    <li class="next"> Execució de l'atac.
+     <li class="next"> Logs a MongoDB</li>
+     <blockquote class="next">
+      function atac(query) {
+      var data_inicial = new Date();
+      var hora_inicial = data_inicial;
+      var result = db.tweets.find(query);
+      while ( result.hasNext()) {
+         var usuari = tojson (result.next().id_usuari);
+         printjson (usuari);   
+         var data_final = new Date();
+         var hora_final = data_final;
+         var total = data_final.getTime()-data_inicial.getTime();
+         }
+      printjson(data_inicial+' Total: '+total);
+      }
+      atac({"text_tweet":/#chip/},{"id_usuari":1});
+     </blockquote>
     </ul>
 </section>
 
 
 <!-- Slide 17 -->
 <section>
-    <h3>Manteniment</h3>
+    <h3>Atac</h3>
     <ul>
-    <li class="next"> PostgreSQL
-    <ul>
-          <li class="next"> Poc costós.
-          <li class="next"> Cal establir coherència de dades.
-    </ul>
-    <li> MongoDB
-    <ul>
-          <li class="next"> Complicat.
-          <li class="next"> No es pot establir coherència de dades.
-    </ul>
+      <li class="next"> Construcció dels queries idèntics per atacar.</li>
+      <li class="next"> Execució de l'atac.</li>
     </ul>
 </section>
 
 
 <!-- Slide 18 -->
+<section>
+    <h3>Manteniment</h3>
+    <ul>
+      <li class="next"> PostgreSQL</li>
+      <ul>
+         <li class="next"> Poc costós.</li>
+         <li class="next"> Cal establir coherència de dades.</li>
+      </ul>
+      <li class="next"> MongoDB</li>
+      <ul>
+         <li class="next"> Complicat.</li>
+         <li class="next"> No es pot establir coherència de dades.</li>
+      </ul>
+    </ul>
+</section>
+
+
+<!-- Slide 19 -->
 <section>
     <h3>Conclusions</h3>
     <ul>
@@ -229,7 +233,7 @@
 </section>
 
 
-<!-- Slide 19 -->
+<!-- Slide 20 -->
 <section>
     <p>Gràcies per la vostra atenció.</p>
 </section>
