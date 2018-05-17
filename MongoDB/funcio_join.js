@@ -23,11 +23,12 @@ function join_tweets_usuaris(query) {
      {
 		 sortida = sortida + " | " + usuari+" "+dades_usuari.nom + "  0";
 	}
+    
+     }
      var data_final = new Date();
      var hora_final = data_final;
      
      var total = data_final.getTime()-data_inicial.getTime();
-     }
   
   printjson(data_inicial+' Total: '+total + " " + sortida);
 
