@@ -8,7 +8,7 @@ function atac(query) {
   while ( result.hasNext()) {
     
      var usuari = tojson (result.next().id_usuari);
-     printjson (usuari);
+     //printjson (usuari);
           
      var data_final = new Date();
      var hora_final = data_final;
