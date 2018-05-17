@@ -1,6 +1,6 @@
 -- TEST QUERIES POSTGRES
 
--- Show users information
+-- Mostrar informació usuari
 SELECT id_usuari,nom,cognoms,descripcio,ciutat,email
 FROM usuaris;
 
