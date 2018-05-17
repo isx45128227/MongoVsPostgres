@@ -32,3 +32,5 @@ function join_tweets_usuaris(query) {
   printjson(data_inicial+' Total: '+total + " " + sortida);
 
 }
+
+join_tweets_usuaris({"text_tweet":/#chip/});
