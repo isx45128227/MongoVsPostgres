@@ -12,7 +12,7 @@
 
 ---
 
-## Introducció Mongo i Postgres (principals diferències)
+## Introducció a MongoDB i PostgreSQL
 
 * Postgres
 
@@ -21,29 +21,21 @@ PostgreSQL és una eina _open source_ que permet gestionar bases de dades relaci
 
 * MongoDB
 
-MongoDB també és una eina _opensource_ per gestionar bases de dades, tot i que en aquest cas no són relacionals.
-Això ens permet crear esquemes dinàmics, àgils i escalables.
+MongoDB també és una eina _opensource_ però gestiona bases de dades no relacionals.
 
 ---
 
-##  Explicació construcció BBDD
+##  Construcció de la BBDD
 
-* Explicació estructura en Postgres.
+* Estructura en PostgreSQL.
 
 ![Postgres Twitter Structure](/MongovSPostgres/Postgres/imatges/twitter.png)
  
-* Explicació estructura en MongoDB.
+* Estructura en MongoDB.
 
 ![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets1.png)
 ![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets2.png)
  
- 
-* Explicació populació de dades
-  [Postgres](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Funcions%20populate)
- 
-* Explicació pas dades de Postgres a MongoDB (funció row_to_json) 
- 
-* Explicació diferència queries (La manera en com es fan db.find vs SELECT).
 
 PostgreSQL                                                                                                        | MongoDB
 ------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------
