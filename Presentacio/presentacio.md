@@ -1,5 +1,7 @@
 # RDBMS vs NoSQL databases
+
 ---
+
 ## Objectius
 
 * Donar a conèixer les bases de dades no relacionals.
@@ -11,6 +13,7 @@
 * Exemples d'ús en entorn "real".
 
 ---
+
 
 ## Introducció a MongoDB i PostgreSQL
 
@@ -25,35 +28,27 @@ MongoDB també és una eina _opensource_ però gestiona bases de dades no relaci
 
 ---
 
+
 ##  Construcció de la BBDD
 
 * Estructura en PostgreSQL.
 
-![Postgres Twitter Structure](/MongovSPostgres/Postgres/imatges/twitter.png)
+![Postgres Twitter Structure](https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Postgres/imatges/twitter.png)
  
 * Estructura en MongoDB.
 
-![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets1.png)
-![Mongo tweets Twitter Structure](/MongovSPostgres/MongoDB/imatges/tweets2.png)
+![Mongo tweets Twitter Structure](https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets1.png)
+![Mongo tweets Twitter Structure](https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets2.png)
+![Mongo tweets Twitter Structure](https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/users.png)
  
-
-PostgreSQL                                                                                                        | MongoDB
-------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------
-`CREATE TABLE tweets (id_tweet bigserial PRIMARY KEY,text_tweet varchar(280) NOT NULL,id_usuari bigint NOT NULL);`| Not Required
-`INSERT INTO tweets(id_tweet,text_tweet,id_usuari)VALUES (DEFAULT,'Example tweet',1);`                            | `db.tweets.insert({ id_tweet: 1, text_tweet:'Example tweet', id_usuari: 1 })`
-`SELECT * FROM tweets;`                                                                                           | `db.tweets.find()` 
-`UPDATE tweets SET id_usuari = 2999 WHERE id_tweet=3000;`                                                         | `db.tweets.update({ id_usuari: 2999 },{ $set: { id_tweet: 3000 } },{ multi: true })`
-`DELETE FROM tweets WHERE id_tweet=3000;`                                                                         | `db.tweets.remove({ _id: 3000 })`
-`SELECT id_usuari,count(*) FROM tweets GROUP BY id_usuari ORDER BY id_usuari;`                                    | `db.tweets.aggregate([ { "$group": { "_id": "$id_usuari", "num": {"$sum":1}}},{"$project": {"_id": false, "id_usuari":"$_id", "numTweets": "$num"}},{"$sort": { "id_usuari": 1}}])`
-
-
 ---
+
 
 ## Proves de queries lents
 
 * Construcció de queries lents.
 
-* Prova in situ de query lent.
+* Prova in situ de query lent a Twittersenseindexs.
 
     * Postgres
 
@@ -74,7 +69,7 @@ PostgreSQL                                                                      
             WHERE text_tweet LIKE '%#chip%' GROUP BY tweets.id_tweet,usuaris.id_usuari,hashtags.id_hashtag ORDER BY 1;
             ```
 	    
-        * Prova buscant a taula hashtags.
+        * Prova buscant a taula hashtags (solució 1).
 	    
             ```
             SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
@@ -90,14 +85,41 @@ PostgreSQL                                                                      
             WHERE hashtags.hashtag='chip' GROUP BY tweets.id_tweet;
             ```
             
+        * Prova in situ de query lent a Twitter amb index (solució 2).
+        
+            ```
+             EXPLAIN ANALYZE SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
+            tweets.id_usuari AS "user_tweet", usuaris.nom AS "nom_user" ,usuaris.username AS "username" ,
+            hashtags.hashtag AS "hashtag_used" ,count(likes.id_usuari_like) AS "user_like", 
+            count(comentaris.id_usuari_comentari) AS "user_comment", count(seguidors.id_usuari_seguidor) 
+            FROM tweets 
+            JOIN usuaris ON tweets.id_usuari=usuaris.id_usuari 
+            LEFT JOIN hashtagstweets ON tweets.id_tweet=hashtagstweets.id_tweet 
+            LEFT JOIN seguidors ON usuaris.id_usuari=seguidors.id_usuari_seguit
+            LEFT JOIN hashtags ON hashtagstweets.id_hashtag=hashtags.id_hashtag
+            LEFT JOIN likes ON tweets.id_tweet=likes.id_tweet
+            LEFT JOIN comentaris ON tweets.id_tweet=comentaris.id_tweet 
+            WHERE text_tweet LIKE '%#chip%' GROUP BY tweets.id_tweet,usuaris.id_usuari,hashtags.id_hashtag ORDER BY 1;
+            ```
+            
+            
     * MongoDB
     
+        * Prova in situ de query lent a Twitter sense index.
+        
+          `db.tweets.find({ "text_tweet":/#chip/},{"text_tweet":1,"_id":0}).explain("executionStats")`
+        
+        
+        * Prova in situ de query lent a Twitter amb index.
+    
+          `db.tweets.find({$text:{$search:"/#chip/"}},{"text_tweet":1,"_id":0}).explain("executionStats")`
     
     
 * Comentar resultats.
     
 
 ---
+
 
 ## Simulació d'ús en entorn real
 
@@ -107,17 +129,18 @@ PostgreSQL                                                                      
 
     * Postgres
     
-        [Atac a Postgres](https://github.com/isx45128227/MongoVsPostgres/tree/master/Postgres/Atac).
+        `./atac.sh`
     
     
     * MongoDB
     
-        [Atac a MongoDB](https://github.com/isx45128227/MongoVsPostgres/tree/master/MongoDB/Atac).
+        `./atac.sh`
 
 
 * Comentar resultats.
 
 ---
+
 
 ## Manteniment de la base de dades
 
@@ -125,7 +148,9 @@ PostgreSQL                                                                      
 
 * MongoDB.
 
+
 ---
+
 
 ## Conclusions
 
@@ -134,5 +159,8 @@ PostgreSQL                                                                      
 * Es pot utilitzar MongoDB en tots els casos?
 
 * Hi ha coherència de dades en ambdues?
+
+---
+
 
 ## Gràcies per la vostra atenció.
