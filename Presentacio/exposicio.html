@@ -11,8 +11,12 @@
 <!-- Slide 1 -->
 <section>
     <h1>RDBMS vs NoSQL</h1>
+    <figure> <!-- Figures are used to display images and videos fullpage -->
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Presentacio/mongovspostgres.jpg">
+    </figure>
     <footer>by Roger Ferran Aranguren</footer>
 </section>
+
 
 <!-- Slide 2 -->
 <section>
@@ -22,16 +26,18 @@
       <li class="next"> Diferències d'ús entre les BBDD relacionals i les no relacionals.
       <li class="next"> Mostrar la sintaxi utilitzada en ambdues interfícies.
       <li class="next"> Exemples d'ús en entorn "real".
+    </li>
+    </ul>
 </section>
+
 
 <!-- Slide 3 -->
 <section>
     <h3>Introducció a MongoDB i PostgreSQL</h3>
+    <ul>
     <li class="next"> PostgreSQL
+    </ul>
     <p class="next"> Eina <strong>open source</strong> que permet gestionar bases de dades relacionals.
-    </p>
-    <li class="next"> MongoDB
-    <p class="next"> També és <strong>open source</strong> però gestiona bases de dades no relacionals.
     </p>
 </section>
 
@@ -39,7 +45,9 @@
 <!-- Slide 4 -->
 <section>
     <h3>Introducció a MongoDB i PostgreSQL</h3>
+    <ul>
     <li class="next"> MongoDB
+    </ul>
     <p class="next"> També és <strong>open source</strong> però gestiona bases de dades no relacionals.
     </p>
 </section>
@@ -55,9 +63,14 @@
 <!-- Slide 6 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/imatges/twitter.png">
-      <figcaption>Postgres structure</figcaption>
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Postgres/imatges/twitter.png" width="100%" height="100%" >
     </figure>
+</section>
+
+<!-- Slide 7 -->
+<section>
+    <p class="next"> Scripts en Python </p>
+    <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/Postgres/imatges/python.jpg">
 </section>
 
 
@@ -70,71 +83,155 @@
 <!-- Slide 8 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="https://github.com/isx45128227/MongoVsPostgres/blob/master/MongoDB/imatges/tweets1.png">
-      <figcaption>MongoDB tweets structure</figcaption>
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets1.png">
     </figure>
 </section>
+
 
 <!-- Slide 9 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="https://github.com/isx45128227/MongoVsPostgres/blob/master/MongoDB/imatges/tweets2.png">
-      <figcaption>MongoDB tweets structure</figcaption>
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/tweets2.png" >
     </figure>
 </section>
+
 
 <!-- Slide 10 -->
 <section>
     <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="https://github.com/isx45128227/MongoVsPostgres/blob/master/MongoDB/imatges/users.png">
-      <figcaption>MongoDB users structure</figcaption>
+      <img src="https://raw.githubusercontent.com/isx45128227/MongoVsPostgres/master/MongoDB/imatges/users.png">
     </figure>
 </section>
 
 
+<!-- Slide 11 -->
 <section>
-    <h3>Even more incrementals</h3>
-    <p>
-      <span class="next" next-order="3">They</span>
-      <span class="next" next-order="5">can</span>
-      <span class="next" next-order="2">even</span>
-      <span class="next" next-order="1">appear</span>
-      <span class="next" next-order="7">in</span>
-      <span class="next" next-order="4">any</span>
-      <span class="next" next-order="6">order</span>
-      <span class="next" next-order="8">!</span>
-    </p>
+    <h3>Construcció de la BBDD</h3>
+    <blockquote> SELECT row_to_json(users) FROM (SELECT id_usuari,nom,cognoms,
+             password,username,telefon,data_alta,descripcio,ciutat,url,idioma,
+             email,
+    </blockquote>
+    <blockquote> 
+             (SELECT array_to_json(array_agg(row_to_json(followers))) FROM 
+             (SELECT data_seguidor,id_usuari_seguidor FROM seguidors WHERE 
+             id_usuari=id_usuari_seguit) followers) as seguidors FROM usuaris) users; 
+    </blockquote>
 </section>
 
 
-<section>
-  <blockquote>
-    Who's brave enough to fly into something we all keep calling a death sphere?
-  </blockquote>
-  <details>
-    <p>In the onstage shell, notes scroll rather than overflow:</p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac dui eu est feugiat lacinia sit amet nec leo. Mauris eu ipsum leo. Nulla mi odio, cursus sed sollicitudin non, fringilla id magna. Suspendisse sit amet posuere elit. Maecenas iaculis, turpis a placerat imperdiet, libero lorem feugiat nisi, nec tincidunt diam nibh sit amet massa. Vestibulum quis adipiscing tellus. Maecenas sollicitudin sodales pulvinar. Donec dui ipsum, bibendum facilisis consequat interdum, tempus ut mauris. Aliquam ut dolor nec odio scelerisque bibendum quis in neque. Aliquam dui dui, pulvinar quis fermentum quis, gravida eu augue. Nunc tristique dolor a urna pulvinar bibendum. Curabitur mollis cursus neque, in scelerisque metus porta non. Donec tempor enim in nibh vestibulum et convallis nisi malesuada. Duis ut lectus sed metus venenatis porttitor id pharetra quam. Suspendisse sapien turpis, ornare in molestie et, gravida eget turpis.
-    </p>
-  </details>
-</section>
 
-<!-- This is the sixth slide -->
+<!-- Slide 12 -->
 <section>
-    <h1>Part two</h1>
+    <h3>Queries lents</h3>
+    <ul>
+    <li> PostgreSQL
+    <ul>
+      <li class="next">JOINS</li>
+    </ul>
+    <li> MongoDB
+    </ul>
 </section>
 
 
+<!-- Slide 13 -->
 <section>
-    <figure> <!-- Figures are used to display images and videos fullpage -->
-      <img src="http://placekitten.com/g/800/600">
-      <figcaption>An image</figcaption>
-    </figure>
-    <div role="note">Kittens are so cute!</div>
+    <h3>Ús en entorn real</h3>
+    <ul>
+    <li class="next"> Scripts en bash
+    <li class="next"> Enregistrament de logs
+    </ul>
+</section>
+
+<!-- Slide 14 -->
+<section>
+    <h3>Ús en entorn real</h3>
+    <ul>
+    <li class="next"> Logs a PostgreSQL
+    
+    <blockquote>
+    max_connections = 1000
+    shared_buffers=248MB
+    
+    log_destination = 'stderr'
+    log_filename = 'postgresql-QUERIES.log' 
+    log_connections = on
+    log_duration = on
+    log_hostname = on
+    log_min_duration_statement = 3000
+      
+    effective_cache_size = 1MB
+    </blockquote>
+    </ul>
 </section>
 
 
+<!-- Slide 15 -->
 <section>
-    <h1>End!</h1>
+    <h3>Ús en entorn real</h3>
+    <ul>
+    <li class="next"> Logs a MongoDB
+     <blockquote>
+     function atac(query) {
+     var data_inicial = new Date();
+     var hora_inicial = data_inicial;
+     var result = db.tweets.find(query);
+     while ( result.hasNext()) {
+        var usuari = tojson (result.next().id_usuari);
+        printjson (usuari);   
+        var data_final = new Date();
+        var hora_final = data_final;
+        var total = data_final.getTime()-data_inicial.getTime();
+        }
+     printjson(data_inicial+' Total: '+total);
+     }
+     atac({"text_tweet":/#chip/},{"id_usuari":1});
+     </blockquote>
+     </ul>
+</section>
+
+
+<!-- Slide 16 -->
+<section>
+    <h3>Atac</h3>
+    <ul>
+    <li class="next"> Construcció dels queries idèntics per atacar.
+    <li class="next"> Execució de l'atac.
+    </ul>
+</section>
+
+
+<!-- Slide 17 -->
+<section>
+    <h3>Manteniment</h3>
+    <ul>
+    <li class="next"> PostgreSQL
+    <ul>
+          <li class="next"> Poc costós.
+          <li class="next"> Cal establir coherència de dades.
+    </ul>
+    <li> MongoDB
+    <ul>
+          <li class="next"> Complicat.
+          <li class="next"> No es pot establir coherència de dades.
+    </ul>
+    </ul>
+</section>
+
+
+<!-- Slide 18 -->
+<section>
+    <h3>Conclusions</h3>
+    <ul>
+      <li class="next"> Quina és més adient?</li>
+      <li class="next"> Podem utilitzar MongoDB en tots els casos?</li>
+      <li class="next"> Coherència de dades?</li>
+    </ul>
+</section>
+
+
+<!-- Slide 19 -->
+<section>
+    <p>Gràcies per la vostra atenció.</p>
 </section>
 
 
@@ -204,10 +301,10 @@
     text-align: center;
   }
   blockquote {
-    height: 100%;
+    height: 30%;
     background-color: black;
     color: white;
-    font-size: 3.75rem;
+    font-size: 1.5rem;
     padding: 50px;
   }
   blockquote:before {
@@ -226,7 +323,7 @@
   figure > * {
     position: absolute;
   }
-  figure > img, figure > video {
+  figure > mg, figure > video {
     width: 100%; height: 100%;
   }
   figcaption {
