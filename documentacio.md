@@ -7,6 +7,7 @@ Syntax used in MongoDB differs from Postgres, but it's really simple to understa
 In this project you will see how to use syntax in MongoDB and Postgres.
 
 
+
 ## A little bit of information
 
 MongoDB is an open source database. It’s designed to be agile and scalable, 
@@ -50,6 +51,8 @@ As a result, non-relational or “NoSQL” databases, like MongoDB, have appeare
 
 ---
 
+
+
 ## Installation
 
 Now it is explained how can we test both interfaces with more or less the same configuration in our system.
@@ -66,12 +69,14 @@ The main details of my Fedora machine are:
 * System type: 64 bits
 
 
+
 ## Environment preparation
 
 First of all, before we start analyzing Postgres and MongoDB we should prepare 
 the environment where we are going to use both interfaces.
 
-To do it we should first install **Postgres** and **MongoDB** in our system.
+To do it we should first install **Postgres** (_version 9.5.7_) and **MongoDB** (_version 2.6_) in our system.
+
 
 
 ### Postgres installation
@@ -79,6 +84,8 @@ To do it we should first install **Postgres** and **MongoDB** in our system.
 To install Postgres in the system we should follow the [_HowToPostgres_](https://github.com/isx45128227/MongoVsPostgres/blob/master/HowToInstallPostgres.md#postgres-installation) created.
   
 Once we have finished installing Postgres we need to continue installing MongoDB.
+  
+  
   
 ### MongoDB installation
 
@@ -88,6 +95,8 @@ To install MongoDB in the system we should follow the [_HowToMongoDB_](https://g
 #### Now we have both interfaces installed in our system, so in order to have data to process, we should create a database.
 
 ---
+
+
 
 ### Starting up the database
 
@@ -175,6 +184,7 @@ collection for each table used in Postgres so I have tried to maintain the same 
 
 
 Once we have defined the structure we are going to use, we can start creating the database.
+
 
 
 ### Database Twitter on Postgres
@@ -326,6 +336,8 @@ Finally, in order to have access to the Postgres database with other users we ne
 
 ---
 
+
+
 ### Postgres database to MongoDB
 
 Once we have created the Postgres database we can export all data into _json_ format.
@@ -373,60 +385,7 @@ it will cost a lot of time to generate _json_ files).
 
 Every index is created in a field that is linked to another table.
 
-We just need to add indexes in Postgres:
-
-* First of all we create index in **tweets** table
-
-    ```
-      twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
-      twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
-    ```
-
-* Secondly we create index in **comentaris** table
-
-    ```
-      twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
-      twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
-    ```
-
-* Thirdly  we create index in **likes** table
-
-    ```
-      twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
-      twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
-    ```
-    
-* Fourthly we create index in **usuarislikescomentaris** table
-
-    ```
-      twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari);
-      twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
-    ```
-
-* Fifthly we create index in **fotos** table
-
-    ` twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
-
-* Sixthly we create index in **retweets** table
-
-    ```
-      twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
-      twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
-    ```
-
-* Seventhly we create index in **hashtagstweets** table
-
-    ```
-      twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
-      twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
-    ```
-
-* Lastly we create index in **seguidors** table
-
-    ```
-      twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
-      twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
-    ```
+We just need to add indexes in Postgres following the steps explained in the [_HowToIndexes_](https://github.com/isx45128227/MongoVsPostgres/blob/master/HowToAddIndexesPostgres.md#indexes-in-postgresql) created.
 
 
 After adding the indexes we are ready to create _json_ files. 
@@ -544,6 +503,8 @@ Once we have added all information to Twitter database we can start using it.
 
 ---
 
+
+
 ### Query Documents
 
 As I said at the very beginning of this project syntax in MongoDB differs from Postgres.
@@ -561,6 +522,7 @@ PostgreSQL                                                                      
 
 
 ---
+
 
 
 ## Testing query performance
@@ -713,61 +675,7 @@ testing different queries to compare speed rates and the number of accesses.
           Seguidors               | id_usuari_seguidor     | Table usuaris 
         
 
-        * Now we create the indexs.
-        
-            #### TWEETS
-
-            ```
-              twitter=# CREATE INDEX id_usuari_tweets_idx ON tweets (id_usuari);
-              twitter=# CREATE INDEX id_foto_tweets_idx ON tweets (foto);
-            ```
-            
-            #### COMENTARIS 
-            
-            ```
-              twitter=# CREATE INDEX id_usuari_comentari_idx ON comentaris (id_usuari_comentari);
-              twitter=# CREATE INDEX id_tweet_idx ON comentaris (id_tweet);
-            ```
-            
-            #### LIKES
-            
-            ```
-              twitter=# CREATE INDEX id_usuari_comentari_likes_idx ON likes (id_usuari_like);
-              twitter=# CREATE INDEX id_tweet_likes_idx ON likes (id_tweet);
-            ```
-            
-            #### USUARISLIKESCOMENTARIS
-            
-            ```
-              twitter=# CREATE INDEX id_usuari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_usuari); 
-              twitter=# CREATE INDEX id_comentari_usuarislikescomentaris_idx ON usuarislikescomentaris(id_comentari);
-            ```
-            
-            #### FOTOS
-            
-            ` twitter=# CREATE INDEX id_tweet_fotos_idx ON fotos (id_tweet);`
-            
-            #### RETWEETS
-            
-            ```
-              twitter=# CREATE INDEX id_usuari_retweets_idx ON retweets(id_usuari_retweet);
-              twitter=# CREATE INDEX id_tweet_retweets_idx ON retweets (id_tweet);
-            ```
-            
-            #### HASHTAGSTWEETS
-            
-            ```
-              twitter=# CREATE INDEX id_tweet_hashtagtweets_idx ON hashtagstweets (id_tweet);
-              twitter=# CREATE INDEX id_hashtag_hashtagtweets_idx ON hashtagstweets (id_hashtag);
-            ```
-            
-            #### SEGUIDORS
-            
-            ```
-              twitter=# CREATE INDEX id_usuariseguit_idx ON seguidors(id_usuari_seguit);
-              twitter=# CREATE INDEX id_usuariseguidor_idx ON seguidors(id_usuari_seguidor);
-            ```
-        
+        * Now we create the indexes as before, following the steps explained in the [_HowToIndexes_](https://github.com/isx45128227/MongoVsPostgres/blob/master/HowToAddIndexesPostgres.md#indexes-in-postgresql). 
         
         #### MongoDB
         
@@ -862,9 +770,9 @@ testing different queries to compare speed rates and the number of accesses.
 ## Query attack 
 
 Once we have tested the query performance with only one query at the same 
-time and having dedicated all machine, we must try what would 
-happen if multiple queries are sent at the same time so that we can analyze
-what results do we obtain if we implement and use this structure.
+time and having dedicated all the system to execute that process, 
+we must try what would happen if multiple queries are sent simultaneously
+so that we can analyze what results do we obtain if we implement this structure.
 
 ### Postgres
 
@@ -874,8 +782,10 @@ In order to do that process massively, it is more practical to create a script.
 The script I have prepared calls different sub_scripts that generate the calls to psql.
 You can find it in [Postgres/Atac](https://github.com/isx45128227/MongoVsPostgres/blob/master/Postgres/Atac/atac.sh).
 
-Before we execute the script and generate that big amount of calls to Postgres, we should make changes in the configuration file
-so that we can create logs of the different connections. It is really simple, you only need to follow this steps:
+Before we execute the script and generate that big amount of calls to Postgres, 
+we should make changes in the configuration file so that we can create logs of 
+the different connections. 
+It is really simple, you only need to follow this steps:
 
 * First of all we log in as a superuser in order to make changes to Postgres configuration file.
 
@@ -1015,7 +925,7 @@ rejecting any query (running also **four** attack scripts).
 Let's see what we obtained:
 
 ```
-  [user@host ]$ grep "Total:" /tmp/MongoDB.log
+  [user@host ]$ grep "Total:" ~/MongoDB.log
   "Fri May 11 2018 11:51:17 GMT+0200 (CEST) Total: 12004"
   "Fri May 11 2018 11:51:19 GMT+0200 (CEST) Total: 13012"
   "Fri May 11 2018 11:51:26 GMT+0200 (CEST) Total: 22371"
@@ -1066,6 +976,7 @@ is that we have to think which fits better with the project we are developing.
 
 To sum up, it would be a good idea to use MongoDB in projects or applications where it is necessary
 to have high-availability and scalability. 
+
 
 
 
