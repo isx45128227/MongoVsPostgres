@@ -72,7 +72,7 @@ MongoDB també és una eina _opensource_ però gestiona bases de dades no relaci
         * Prova buscant a taula hashtags (solució 1).
 	    
             ```
-            SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
+            EXPLAIN ANALYZE SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
             tweets.id_usuari AS "user_tweet", count(likes.id_usuari_like) AS "user_like", 
             count(comentaris.id_usuari_comentari) AS "user_comment", count(seguidors.id_usuari_seguidor) 
             FROM tweets 
