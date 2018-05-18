@@ -34,4 +34,6 @@ function join_tweets_usuaris(query) {
 
 }
 
+// Example join function
+
 join_tweets_usuaris({"text_tweet":/#chip/});

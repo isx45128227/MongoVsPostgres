@@ -1,4 +1,4 @@
-// QUERIES PROVA MONGODB
+// TEST QUERIES MONGODB
 
 // Mostrar informació d'un usuari
 

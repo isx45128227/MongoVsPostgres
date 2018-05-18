@@ -1,5 +1,6 @@
-// INDEX MONGO
+// INDEXES MONGO
 
+// Example create index
 > db.tweets.createIndex({text_tweet:"text"},{"name":"cerca_paraules_tweet"})
 {
 	"createdCollectionAutomatically" : false,
@@ -8,7 +9,7 @@
 	"ok" : 1
 }
 
-
+// Show indexes from tweets collection
 > db.tweets.getIndexes()
 [
 	{
@@ -39,6 +40,8 @@
 	}
 ]
 
+
+// Queries using the index
 > db.tweets.find({$text:{$search:"5000"}})
 
 var result = db.tweets.find({$text:{$search:"5009817"}},{"id_usuari":1})
@@ -46,12 +49,3 @@ var result = db.tweets.find({$text:{$search:"5009817"}},{"id_usuari":1})
 var usuari = tojson( result.next().id_usuari); 
 
 db.users.find({"id_usuari":parseInt(usuari)})
-
-
-
-
-var myCursor = db.users.find( {} );
-while ( myCursor.hasNext() ) {    printjson( myCursor.next().id_usuari); }
-
-var myCursor = db.users.find( {} );
-while ( myCursor.hasNext() ) {    printjson( myCursor.next().tags[0]); }
