@@ -1,5 +1,5 @@
 -- DATABASE SCRIPT POSTGRES
--- TWITTER SENSE HASHTAGS-TWEETS
+-- TWITTER WITHOUT HASHTAGS-TWEETS
 
 -- CREATE DATABASE
 DROP DATABASE IF EXISTS twitter;
@@ -172,7 +172,7 @@ FOREIGN KEY (id_tweet) REFERENCES tweets(id_tweet);
 
 
 
--- ROL different de postgres
+-- ROL different
 
 CREATE ROLE twitteradmin;
 

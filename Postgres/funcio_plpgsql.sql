@@ -1,3 +1,5 @@
+-- Function to update table tweets
+
 CREATE OR REPLACE FUNCTION update_tweets()
 RETURNS text AS
 $$
@@ -27,6 +29,5 @@ RETURN '1';
 END;
 $$
 LANGUAGE 'plpgsql' ;
-
 
 -- SELECT update_tweets();

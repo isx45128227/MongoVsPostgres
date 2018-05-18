@@ -1,4 +1,4 @@
--- TEST QUERIES POSTGRES
+-- TEST QUERIES POSTGRESQL
 
 -- Mostrar informació usuari
 SELECT id_usuari,nom,cognoms,descripcio,ciutat,email
@@ -24,7 +24,7 @@ WHERE text_tweet LIKE '%5000';
 
 ------------------------------------------------------------------------
 
--- SELECTS AMB JOIN
+-- SELECTS JOIN
 
 -- Tots els camps dels tweets, els usuaris i hashtagstweets que contenen
 -- el text 500 i ordenat per el nom de l'usuari.
@@ -71,7 +71,7 @@ FROM tweets
  
 ------------------------------------------------------------------------
 
--- Queries al docker
+-- Queries docker
 
 -- Comentaris i usuaris que han donat like als comentaris del tweet 3.
 psql -h 172.17.0.2 -p 5432 -U docker -d twitter -c "SELECT comentaris.text_comentari, usuarislikescomentaris.id_usuari,usuaris.nom
@@ -285,7 +285,7 @@ SELECT tablename,tableowner FROM pg_tables;
 (71 rows)
 
 
--- ANALISI
+-- ANALYZE
 
 EXPLAIN ANALYZE SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
    tweets.id_usuari AS "user_tweet", usuaris.nom AS "nom_user" ,usuaris.username AS "username" ,
@@ -302,7 +302,7 @@ FROM tweets
  
 
 
--- ALTERNATIVA (Buscar paraules amb #)
+-- ALTERNATIVE (Search in hashtags)
 
 SELECT tweets.id_tweet AS "id_tweet", tweets.text_tweet AS "text_tweet", 
    tweets.id_usuari AS "user_tweet", count(likes.id_usuari_like) AS "user_like", 

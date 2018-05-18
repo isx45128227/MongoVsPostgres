@@ -1,4 +1,5 @@
--- DATABASE phpMyAdmin
+-- SCRIPT DATABASE phpMyAdmin
+-- Used to create the pdf and jpg schema.
 
 DROP DATABASE IF EXISTS twitter;
 

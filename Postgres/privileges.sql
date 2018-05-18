@@ -1,7 +1,6 @@
--- PRIVILEGIS a la BBDD twitter per a poder fer consultes executant: psql -p 5432 -U username -d twitter
+-- Privileges into twitter database in order to allow queries using different users: psql -p 5432 -U username -d twitter
 
 CREATE USER YourUsername WITH PASSWORD 'password';
-
 
 GRANT ALL ON DATABASE twitter TO YourUsername;
 
