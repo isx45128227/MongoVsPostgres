@@ -259,6 +259,7 @@ we have to do is to import that script.
 
     * That is the process we should follow for each table. 
       Take into account that every script generates different data, and it is not necessary all table data.
+      So it is important that you follow the next steps.
 
         `twitter=# COPY usuaris FROM '/tmp/usuaris.csv' DELIMITER ',' CSV HEADER;`
         
